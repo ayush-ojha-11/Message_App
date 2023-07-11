@@ -14,6 +14,8 @@ import android.util.Log;
 
 import androidx.core.app.NotificationCompat;
 
+import com.as.mymessage.DatabasePackage.DatabaseHelper;
+import com.as.mymessage.DatabasePackage.MessageTableModalClass;
 import com.as.mymessage.activities.ComposeSmsActivity;
 import com.as.mymessage.activities.MainActivity;
 import com.as.mymessage.modals.RecyclerModalClass;
@@ -36,6 +38,8 @@ public class SmsReceiver extends BroadcastReceiver  {
         handleReceiveRequest(context,intent);
 
 
+        // Notifying the user about the incoming message
+
         NotificationChannel mChannel = null;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             mChannel = new NotificationChannel("01", "notification", NotificationManager.IMPORTANCE_HIGH);
@@ -53,6 +57,11 @@ public class SmsReceiver extends BroadcastReceiver  {
             manager.notify(0, mBuilder.build());
         }
 
+        // Adding Messages to database when the application is not active and sms is received
+
+        DatabaseHelper databaseHelper = DatabaseHelper.getDB(context);
+        databaseHelper.messageTableModalClassDao().addMessage(new MessageTableModalClass(R.drawable.ic_launcher_foreground,
+                mobNumber,messageReceived,TimeStampUtil.convert(time)));
     }
 
     public static void handleReceiveRequest(Context context,Intent intent){

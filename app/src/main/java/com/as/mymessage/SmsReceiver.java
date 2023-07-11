@@ -1,12 +1,21 @@
 package com.as.mymessage;
 
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.telephony.SmsMessage;
 import android.util.Log;
 
+import androidx.core.app.NotificationCompat;
+
+import com.as.mymessage.activities.ComposeSmsActivity;
+import com.as.mymessage.activities.MainActivity;
 import com.as.mymessage.modals.RecyclerModalClass;
 import com.as.mymessage.util.TimeStampUtil;
 
@@ -15,13 +24,39 @@ import java.sql.Timestamp;
 
 public class SmsReceiver extends BroadcastReceiver  {
 
+    static String messageReceived = null;
+    static String mobNumber = null;
+    static long time;
+
 
     @Override
     public void onReceive(Context context, Intent intent) {
 
-        String messageReceived = null;
-        String mobNumber = null;
-        long time;
+        //Get The sms
+        handleReceiveRequest(context,intent);
+
+
+        NotificationChannel mChannel = null;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            mChannel = new NotificationChannel("01", "notification", NotificationManager.IMPORTANCE_HIGH);
+            NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context, "01");
+            mBuilder.setSmallIcon(R.drawable.ic_launcher_foreground);
+            mBuilder.setContentTitle(mobNumber);
+            mBuilder.setContentText(messageReceived);
+            mBuilder.setStyle(new NotificationCompat.BigTextStyle().bigText(messageReceived));
+            Intent notificationIntent = new Intent(context, MainActivity.class);
+            PendingIntent contentIntent = PendingIntent.getActivity(context, 0, notificationIntent, PendingIntent.FLAG_MUTABLE);
+            mBuilder.setContentIntent(contentIntent);
+
+            NotificationManager manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+            manager.createNotificationChannel(mChannel);
+            manager.notify(0, mBuilder.build());
+        }
+
+    }
+
+    public static void handleReceiveRequest(Context context,Intent intent){
+
 
         Bundle bundle =intent.getExtras();
 
@@ -44,9 +79,8 @@ public class SmsReceiver extends BroadcastReceiver  {
             args.putSerializable("object",recyclerModalClass);
             broadcastIntent.setAction("SMS_RECEIVED_ACTION");
             broadcastIntent.putExtra("sms",args);
+
             context.sendBroadcast(broadcastIntent);
         }
-
-
     }
 }

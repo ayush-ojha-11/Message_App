@@ -1,14 +1,20 @@
 package com.as.mymessage.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.TaskStackBuilder;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Build;
 import android.os.Bundle;
 import android.widget.Toast;
 
@@ -36,9 +42,7 @@ public class MainActivity extends AppCompatActivity{
             Bundle args =intent.getBundleExtra("sms");
             RecyclerModalClass recyclerModalClass = (RecyclerModalClass) args.getSerializable("object");
             recyclerModalClassList.add(recyclerModalClass);
-            //notifying adapter about the data change
             conversationRecyclerViewAdapter.notifyDataSetChanged();
-            Toast.makeText(getApplicationContext(),"A message received!",Toast.LENGTH_SHORT).show();
         }
     };
 
@@ -59,7 +63,6 @@ public class MainActivity extends AppCompatActivity{
         recyclerView.setLayoutManager(linearLayoutManager);
         conversationRecyclerViewAdapter = new ConversationRecyclerViewAdapter(recyclerModalClassList,getApplicationContext());
         recyclerView.setAdapter(conversationRecyclerViewAdapter);
-
         intentFilter = new IntentFilter();
         intentFilter.addAction("SMS_RECEIVED_ACTION");
     }
@@ -69,4 +72,5 @@ public class MainActivity extends AppCompatActivity{
         registerReceiver(intentReceiver, intentFilter);
         super.onResume();
     }
+
 }

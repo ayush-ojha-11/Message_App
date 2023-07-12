@@ -25,6 +25,8 @@ import java.sql.Timestamp;
 
 
 public class SmsReceiver extends BroadcastReceiver  {
+    
+   private static final int messageImage = R.drawable.baseline_message_24;
 
     static String messageReceived = null;
     static String mobNumber = null;
@@ -37,14 +39,13 @@ public class SmsReceiver extends BroadcastReceiver  {
         //Get The sms
         handleReceiveRequest(context,intent);
 
-
         // Notifying the user about the incoming message
 
         NotificationChannel mChannel = null;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             mChannel = new NotificationChannel("01", "notification", NotificationManager.IMPORTANCE_HIGH);
             NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context, "01");
-            mBuilder.setSmallIcon(R.drawable.ic_launcher_foreground);
+            mBuilder.setSmallIcon(messageImage);
             mBuilder.setContentTitle(mobNumber);
             mBuilder.setContentText(messageReceived);
             mBuilder.setStyle(new NotificationCompat.BigTextStyle().bigText(messageReceived));
@@ -60,7 +61,7 @@ public class SmsReceiver extends BroadcastReceiver  {
         // Adding Messages to database when the application is not active and sms is received
 
         DatabaseHelper databaseHelper = DatabaseHelper.getDB(context);
-        databaseHelper.messageTableModalClassDao().addMessage(new MessageTableModalClass(R.drawable.ic_launcher_foreground,
+        databaseHelper.messageTableModalClassDao().addMessage(new MessageTableModalClass(messageImage,
                 mobNumber,messageReceived,TimeStampUtil.convert(time)));
     }
 
@@ -84,11 +85,10 @@ public class SmsReceiver extends BroadcastReceiver  {
 
             Intent broadcastIntent = new Intent("MessageReceiver");
             Bundle args = new Bundle();
-            RecyclerModalClass recyclerModalClass = new RecyclerModalClass(1,R.drawable.ic_launcher_foreground,mobNumber,messageReceived, TimeStampUtil.convert(time));
+            RecyclerModalClass recyclerModalClass = new RecyclerModalClass(messageImage,mobNumber,messageReceived, TimeStampUtil.convert(time));
             args.putSerializable("object",recyclerModalClass);
             broadcastIntent.setAction("SMS_RECEIVED_ACTION");
             broadcastIntent.putExtra("sms",args);
-
             context.sendBroadcast(broadcastIntent);
         }
     }

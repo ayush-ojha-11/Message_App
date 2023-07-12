@@ -12,7 +12,7 @@ public class RecyclerModalClass implements Serializable {
     String message;
     String time;
 
-    public RecyclerModalClass(int id,int image, String name, String message, String time) {
+    public RecyclerModalClass (int id,int image, String name, String message, String time) {
         this.id = id;
         this.image = image;
         this.name = name;

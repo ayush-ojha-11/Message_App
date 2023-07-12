@@ -11,7 +11,7 @@ import java.util.List;
 @Dao
 public interface MessageTableModalClassDao {
 
-    @Query("SELECT * FROM messagetablemodalclass order by id desc")
+    @Query("SELECT * FROM messagetablemodalclass order by id asc")
     List<MessageTableModalClass> getAllMessages();
 
     @Insert

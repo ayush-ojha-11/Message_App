@@ -7,8 +7,11 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.telephony.SmsMessage;
 import android.util.Log;
 
@@ -58,17 +61,20 @@ public class SmsReceiver extends BroadcastReceiver  {
             manager.notify(0, mBuilder.build());
         }
 
+
         // Adding Messages to database when the application is not active and sms is received
 
         DatabaseHelper databaseHelper = DatabaseHelper.getDB(context);
         databaseHelper.messageTableModalClassDao().addMessage(new MessageTableModalClass(messageImage,
                 mobNumber,messageReceived,TimeStampUtil.convert(time)));
+
     }
 
     public static void handleReceiveRequest(Context context,Intent intent){
 
 
         Bundle bundle =intent.getExtras();
+
 
         //pdus (Protocol Data Units)
         Object[] smsObj = (Object[]) bundle.get("pdus");
@@ -79,6 +85,12 @@ public class SmsReceiver extends BroadcastReceiver  {
             mobNumber = message.getDisplayOriginatingAddress();
             messageReceived = message.getDisplayMessageBody();
             time = message.getTimestampMillis();
+
+            if(isNumberInContacts(context,mobNumber)){
+                mobNumber = getContactNameFromNumber(context,mobNumber);
+            }
+
+
             Log.d("MsgDetails","MobNo:"+mobNumber+" , Msg: "+messageReceived+" , Time: "+time);
 
             //Sending intent in the form of Serializable
@@ -91,5 +103,35 @@ public class SmsReceiver extends BroadcastReceiver  {
             broadcastIntent.putExtra("sms",args);
             context.sendBroadcast(broadcastIntent);
         }
+    }
+
+   public static boolean isNumberInContacts (Context context, String number) {
+        Uri uri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, Uri.encode(number));
+        String[] projection = new String[]{ContactsContract.PhoneLookup._ID};
+
+        try (Cursor cursor = context.getContentResolver().query(uri, projection, null, null, null)) {
+            if (cursor != null && cursor.moveToFirst()) {
+                return true; // The number is found in contacts
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return false; // The number is not found in contacts
+    }
+    private static String getContactNameFromNumber(Context context, String number) {
+        Uri uri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, Uri.encode(number));
+        String[] projection = new String[]{ContactsContract.PhoneLookup.DISPLAY_NAME};
+
+        try (Cursor cursor = context.getContentResolver().query(uri, projection, null, null, null)) {
+            if (cursor != null && cursor.moveToFirst()) {
+                int nameIndex = cursor.getColumnIndex(ContactsContract.PhoneLookup.DISPLAY_NAME);
+                return cursor.getString(nameIndex); // Return the contact name
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return null; // The contact name is not found
     }
 }

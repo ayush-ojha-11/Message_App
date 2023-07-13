@@ -1,5 +1,6 @@
 package com.as.mymessage.adapters;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,13 +31,14 @@ public class ConversationRecyclerViewAdapter extends RecyclerView.Adapter<Conver
         return new ConversationViewHolder(LayoutInflater.from(context).inflate(R.layout.message_recycler_item,parent,false));
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(@NonNull ConversationViewHolder holder, int position) {
 
         holder.imageView.setImageResource(recyclerList.get(position).getImage());
         holder.nameView.setText(recyclerList.get(position).getName());
         holder.bodyView.setText(recyclerList.get(position).getMessage());
-        holder.timeView.setText(recyclerList.get(position).getTime());
+        holder.timeView.setText(" "+recyclerList.get(position).getDate()+"\n"+recyclerList.get(position).getTime());
 
         //OnClickListener
 

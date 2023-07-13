@@ -51,7 +51,7 @@
         </activity>
 
         <receiver
-            android:name=".SmsReceiver"
+            android:name=".MessageReceiverClasses.SmsReceiver"
             android:exported="true"
             android:permission="android.permission.BROADCAST_SMS">
             <intent-filter>
@@ -61,7 +61,7 @@
 
         <receiver
             android:enabled="true"
-            android:name=".NewSmsReceiver"
+            android:name=".MessageReceiverClasses.NewSmsReceiver"
             android:permission="android.permission.BROADCAST_SMS"
             android:exported="true">
             <intent-filter>
@@ -74,7 +74,7 @@
 
         <!-- Added from below -->
         <receiver
-            android:name=".MmsReceiver"
+            android:name=".MessageReceiverClasses.MmsReceiver"
             android:exported="true"
             android:permission="android.permission.BROADCAST_WAP_PUSH">
             <intent-filter>
@@ -85,7 +85,7 @@
 
 
         <service
-            android:name=".HeadlessSmsSendService"
+            android:name=".MessageReceiverClasses.HeadlessSmsSendService"
             android:exported="true"
             android:permission="android.permission.SEND_RESPOND_VIA_MESSAGE">
             <intent-filter>

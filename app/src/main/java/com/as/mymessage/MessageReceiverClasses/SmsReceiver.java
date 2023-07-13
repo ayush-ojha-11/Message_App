@@ -1,6 +1,5 @@
-package com.as.mymessage;
+package com.as.mymessage.MessageReceiverClasses;
 
-import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -19,18 +18,14 @@ import androidx.core.app.NotificationCompat;
 
 import com.as.mymessage.DatabasePackage.DatabaseHelper;
 import com.as.mymessage.DatabasePackage.MessageTableModalClass;
-import com.as.mymessage.activities.ComposeSmsActivity;
+import com.as.mymessage.R;
 import com.as.mymessage.activities.MainActivity;
 import com.as.mymessage.modals.RecyclerModalClass;
 import com.as.mymessage.util.TimeStampUtil;
 
-import java.sql.Timestamp;
-import java.util.List;
-import java.util.Set;
-
 
 public class SmsReceiver extends BroadcastReceiver  {
-    
+
    private static final int messageImage = R.drawable.baseline_message_24;
 
     static String messageReceived = null;
@@ -64,11 +59,10 @@ public class SmsReceiver extends BroadcastReceiver  {
             manager.notify(0, mBuilder.build());
         }
 
-
-        // Adding Messages to databasew
+        // Adding Messages to database
         DatabaseHelper databaseHelper = DatabaseHelper.getDB(context);
         databaseHelper.messageTableModalClassDao().addMessage(new MessageTableModalClass(messageImage,
-                mobNumber,messageReceived,TimeStampUtil.convert(time)));
+                mobNumber,messageReceived,TimeStampUtil.convertToDate(time),TimeStampUtil.convertToTime(time)));
 
     }
     public static void handleReceiveRequest(Context context,Intent intent){
@@ -98,7 +92,8 @@ public class SmsReceiver extends BroadcastReceiver  {
 
             Intent broadcastIntent = new Intent("MessageReceiver");
             Bundle args = new Bundle();
-            RecyclerModalClass recyclerModalClass = new RecyclerModalClass(messageImage,mobNumber,messageReceived, TimeStampUtil.convert(time));
+            RecyclerModalClass recyclerModalClass = new RecyclerModalClass(messageImage,mobNumber,messageReceived,TimeStampUtil.convertToDate(time),
+                    TimeStampUtil.convertToTime(time));
             args.putSerializable("object",recyclerModalClass);
             broadcastIntent.setAction("SMS_RECEIVED_ACTION");
             broadcastIntent.putExtra("sms",args);

@@ -1,4 +1,4 @@
-package com.as.mymessage;
+package com.as.mymessage.MessageReceiverClasses;
 
 import android.app.Service;
 import android.content.Intent;

@@ -55,8 +55,7 @@ public class MainActivity extends AppCompatActivity {
         @SuppressLint("NotifyDataSetChanged")
         @Override
         public void onReceive(Context context, Intent intent) {
-            int id = 0;
-            //Receiving Intent from broadcast
+            //Receiving Intent from broadcast and adding data to recyclerView
             Bundle args = intent.getBundleExtra("sms");
             RecyclerModalClass recyclerModalClass = (RecyclerModalClass) args.getSerializable("object");
             recyclerModalClassList.add(recyclerModalClass);
@@ -70,6 +69,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+
+
 
         //Getting access to Room database
         databaseHelper = DatabaseHelper.getDB(this);
@@ -86,28 +88,26 @@ public class MainActivity extends AppCompatActivity {
         intentFilter.addAction("SMS_RECEIVED_ACTION");
 
         //Adding Data to recyclerview from the room database
-
-
         List<MessageTableModalClass> messageListFromDatabase = databaseHelper.messageTableModalClassDao().getAllMessages();
-
-
 
         for (int i = 0; i < messageListFromDatabase.size(); i++) {
                 recyclerModalClassList.add(new RecyclerModalClass(messageListFromDatabase.get(i).getImage(), messageListFromDatabase.get(i).getSender(),
-                        messageListFromDatabase.get(i).getMessage(), messageListFromDatabase.get(i).getTime()));
+                        messageListFromDatabase.get(i).getMessage(),messageListFromDatabase.get(i).getDate(), messageListFromDatabase.get(i).getTime()));
                 conversationRecyclerViewAdapter.notifyDataSetChanged();
-            }
 
-
-
-
-
+        }
     }
 
     @Override
     protected void onResume() {
         registerReceiver(intentReceiver, intentFilter);
         super.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        unregisterReceiver(intentReceiver);
+        super.onPause();
     }
 
     @Override

@@ -1,70 +1,72 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/lyt_parent"
-    android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:gravity="center_vertical"
-    android:minHeight="60dp"
-    android:orientation="horizontal"
-    android:padding="10dp">
+    android:layout_width="match_parent"
+    android:gravity="center"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="30dp"
-        android:scaleType="centerCrop"
-        android:layout_height="30dp"
-        android:layout_marginStart="5dp"
-        android:src="@drawable/ic_launcher_foreground"
-        android:contentDescription="TODO" />
-
-    <LinearLayout
+    <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        android:layout_marginEnd="10dp"
-        android:layout_marginStart="15dp"
-        android:orientation="vertical">
-
+        app:cardCornerRadius="7dp"
+        app:cardElevation="1dp"
+        android:backgroundTint="@color/white"
+        app:cardUseCompatPadding="true">
+        
+        
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:id="@+id/llRow"
+            android:padding="11dp"
             android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/textViewName"
+            
+            <ImageView
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:id="@+id/imageView"/>
+            
+            <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                tools:text="Name"
-                android:textAppearance="@style/TextAppearance.AppCompat.Title"
-                android:textColor="#424242"
-                android:textStyle="normal" />
+                android:layout_marginStart="11dp"
+                android:orientation="vertical">
+                
+                <TextView
+                    android:id="@+id/textViewName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Contact Name"
+                    android:maxLines="1"
+                    android:textSize="18sp"
+                    android:textColor="@color/black"
+                    android:textStyle="bold"/>
+                
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="16sp"
+                    android:text="Ayush Here"
+                    android:maxLines="1"
+                    android:ellipsize="end"
+                    android:id="@+id/textViewBody"/>
+            </LinearLayout>
 
             <TextView
-                android:id="@+id/textViewTime"
                 android:layout_width="wrap_content"
+                android:id="@+id/textViewTime"
                 android:layout_height="wrap_content"
-                tools:text="00.00"
-                android:textAppearance="@style/TextAppearance.AppCompat.Caption"
-                android:textColor="#686565" />
+                android:layout_gravity="center_vertical"
+                android:text=" 7/23/23\n05:11PM"/>
+
+
+
         </LinearLayout>
+        
+    </androidx.cardview.widget.CardView>
 
-        <TextView
-            android:id="@+id/textViewBody"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:maxLines="1"
-            android:singleLine="true"
-            tools:text="Body"
-            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-            android:textColor="#686565" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="2dp"
-        android:background="@color/black"/>
 
 </LinearLayout>

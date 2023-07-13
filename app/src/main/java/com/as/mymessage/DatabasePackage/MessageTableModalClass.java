@@ -22,23 +22,28 @@ public class MessageTableModalClass {
     @ColumnInfo(name="message")
     private String message;
 
+    @ColumnInfo(name = "date")
+    private String date;
+
     @ColumnInfo(name="time")
     private String time;
 
-   public MessageTableModalClass(int id, int image, String sender, String message, String time) {
+   public MessageTableModalClass(int id, int image, String sender, String message,String date, String time) {
         this.id = id;
         this.image = image;
         this.sender = sender;
         this.message = message;
+        this.date = date;
         this.time = time;
     }
 
     @Ignore
-   public MessageTableModalClass(int image, String sender, String message, String time) {
+   public MessageTableModalClass(int image, String sender, String message,String date, String time) {
 
         this.image = image;
         this.sender = sender;
         this.message = message;
+        this.date=date;
         this.time = time;
     }
 
@@ -81,5 +86,13 @@ public class MessageTableModalClass {
 
     public void setTime(String time) {
         this.time = time;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
     }
 }

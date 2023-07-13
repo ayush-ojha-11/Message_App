@@ -36,9 +36,11 @@ import com.as.mymessage.R;
 import com.as.mymessage.modals.RecyclerModalClass;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 public class MainActivity extends AppCompatActivity {
@@ -56,10 +58,20 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             //Receiving Intent from broadcast and adding data to recyclerView
+
             Bundle args = intent.getBundleExtra("sms");
             RecyclerModalClass recyclerModalClass = (RecyclerModalClass) args.getSerializable("object");
-            recyclerModalClassList.add(recyclerModalClass);
-            conversationRecyclerViewAdapter.notifyDataSetChanged();
+            for(RecyclerModalClass item : recyclerModalClassList){
+                if(item.getName().equalsIgnoreCase(recyclerModalClass.getName())) {
+                    item.setMessage(recyclerModalClass.getMessage());
+                    conversationRecyclerViewAdapter.notifyItemChanged(recyclerModalClassList.indexOf(item));
+
+                }
+                else{
+                    recyclerModalClassList.add(recyclerModalClass);
+                    conversationRecyclerViewAdapter.notifyDataSetChanged();
+                }
+            }
         }
     };
 
@@ -87,15 +99,25 @@ public class MainActivity extends AppCompatActivity {
         intentFilter = new IntentFilter();
         intentFilter.addAction("SMS_RECEIVED_ACTION");
 
-        //Adding Data to recyclerview from the room database
+        //Adding Data to hashmap from the database
         List<MessageTableModalClass> messageListFromDatabase = databaseHelper.messageTableModalClassDao().getAllMessages();
-
-        for (int i = 0; i < messageListFromDatabase.size(); i++) {
-                recyclerModalClassList.add(new RecyclerModalClass(messageListFromDatabase.get(i).getImage(), messageListFromDatabase.get(i).getSender(),
-                        messageListFromDatabase.get(i).getMessage(),messageListFromDatabase.get(i).getDate(), messageListFromDatabase.get(i).getTime()));
-                conversationRecyclerViewAdapter.notifyDataSetChanged();
-
+        Map<String, List<MessageTableModalClass>> messagesBySender = new HashMap<>();
+        for(MessageTableModalClass messageTableModalClass : messageListFromDatabase){
+            if(!messagesBySender.containsKey(messageTableModalClass.getSender())){
+                messagesBySender.put(messageTableModalClass.getSender(), new ArrayList<MessageTableModalClass>());
+            }
+            Objects.requireNonNull(messagesBySender.get(messageTableModalClass.getSender())).add(messageTableModalClass);
         }
+
+
+        //Adding Data to recyclerview from the hashmap
+        for(Map.Entry<String, List<MessageTableModalClass>> entry : messagesBySender.entrySet()){
+            MessageTableModalClass latestMessage = entry.getValue().get(entry.getValue().size()-1);
+            recyclerModalClassList.add(new RecyclerModalClass(latestMessage.getImage(), latestMessage.getSender(),
+                    latestMessage.getMessage(),latestMessage.getDate(),latestMessage.getTime()));
+                conversationRecyclerViewAdapter.notifyDataSetChanged();
+        }
+
     }
 
     @Override

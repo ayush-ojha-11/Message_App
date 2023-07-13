@@ -1,5 +1,6 @@
 package com.as.mymessage.DatabasePackage;
 
+import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.Ignore;
@@ -15,6 +16,7 @@ public class MessageTableModalClass {
     private int image;
 
     @ColumnInfo(name="sender")
+    @NonNull
     private String sender;
 
     @ColumnInfo(name="message")
@@ -56,11 +58,12 @@ public class MessageTableModalClass {
         this.image = image;
     }
 
+    @NonNull
     public String getSender() {
         return sender;
     }
 
-    public void setSender(String sender) {
+    public void setSender(@NonNull String sender) {
         this.sender = sender;
     }
 

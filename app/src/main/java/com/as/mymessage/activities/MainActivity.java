@@ -26,6 +26,7 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.as.mymessage.DatabasePackage.DatabaseHelper;
@@ -35,8 +36,10 @@ import com.as.mymessage.R;
 import com.as.mymessage.modals.RecyclerModalClass;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -46,10 +49,6 @@ public class MainActivity extends AppCompatActivity {
     ConversationRecyclerViewAdapter conversationRecyclerViewAdapter;
     DatabaseHelper databaseHelper;
 
-    ActivityResultLauncher<String[]> mPermissionResultLauncher;
-    private boolean isReadContactPermissionGranted = false;
-    private boolean isNotificationPermissionGranted = false;
-    private boolean isSmsPermissionGranted = false;
 
 
     private final BroadcastReceiver intentReceiver = new BroadcastReceiver() {
@@ -71,7 +70,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        requestPermission();
 
         //Getting access to Room database
         databaseHelper = DatabaseHelper.getDB(this);
@@ -89,29 +87,21 @@ public class MainActivity extends AppCompatActivity {
 
         //Adding Data to recyclerview from the room database
 
+
         List<MessageTableModalClass> messageListFromDatabase = databaseHelper.messageTableModalClassDao().getAllMessages();
+
+
+
         for (int i = 0; i < messageListFromDatabase.size(); i++) {
-            recyclerModalClassList.add(new RecyclerModalClass(messageListFromDatabase.get(i).getId(), messageListFromDatabase.get(i).getImage(), messageListFromDatabase.get(i).getSender(),
-                    messageListFromDatabase.get(i).getMessage(), messageListFromDatabase.get(i).getTime()));
-            conversationRecyclerViewAdapter.notifyDataSetChanged();
-        }
+                recyclerModalClassList.add(new RecyclerModalClass(messageListFromDatabase.get(i).getImage(), messageListFromDatabase.get(i).getSender(),
+                        messageListFromDatabase.get(i).getMessage(), messageListFromDatabase.get(i).getTime()));
+                conversationRecyclerViewAdapter.notifyDataSetChanged();
+            }
 
 
-        mPermissionResultLauncher =registerForActivityResult(new ActivityResultContracts.RequestMultiplePermissions()
-                , new ActivityResultCallback<Map<String, Boolean>>() {
-                    @Override
-                    public void onActivityResult(Map<String, Boolean> result) {
-                        if(result.get(Manifest.permission.READ_CONTACTS) != null){
-                            isReadContactPermissionGranted = result.get(Manifest.permission.READ_CONTACTS);
-                        }
-                        if(result.get(Manifest.permission.READ_SMS) != null){
-                            isSmsPermissionGranted = result.get(Manifest.permission.READ_SMS);
-                        }
-                        if(result.get(POST_NOTIFICATIONS) != null){
-                            isNotificationPermissionGranted = result.get(POST_NOTIFICATIONS);
-                        }
-                    }
-                });
+
+
+
     }
 
     @Override
@@ -126,33 +116,4 @@ public class MainActivity extends AppCompatActivity {
         finish();
     }
 
-    private void requestPermission(){
-        isReadContactPermissionGranted = ContextCompat.checkSelfPermission(this,Manifest.permission.READ_CONTACTS)
-                == PackageManager.PERMISSION_GRANTED;
-
-        isNotificationPermissionGranted= ContextCompat.checkSelfPermission(this, POST_NOTIFICATIONS)
-                == PackageManager.PERMISSION_GRANTED;
-
-        isSmsPermissionGranted = ContextCompat.checkSelfPermission(this,Manifest.permission.READ_SMS)
-                == PackageManager.PERMISSION_GRANTED;
-
-        List<String> permissionRequest = new ArrayList<>();
-
-        if(!isSmsPermissionGranted){
-            permissionRequest.add(Manifest.permission.READ_SMS);
-        }
-
-        if(!isReadContactPermissionGranted){
-            permissionRequest.add(Manifest.permission.READ_CONTACTS);
-        }
-
-        if(!isNotificationPermissionGranted){
-            permissionRequest.add(POST_NOTIFICATIONS);
-        }
-
-        if(!permissionRequest.isEmpty()){
-            mPermissionResultLauncher.launch(permissionRequest.toArray(new String[0]));
-        }
-
-    }
 }

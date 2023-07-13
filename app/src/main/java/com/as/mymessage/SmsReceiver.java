@@ -25,6 +25,8 @@ import com.as.mymessage.modals.RecyclerModalClass;
 import com.as.mymessage.util.TimeStampUtil;
 
 import java.sql.Timestamp;
+import java.util.List;
+import java.util.Set;
 
 
 public class SmsReceiver extends BroadcastReceiver  {
@@ -35,6 +37,8 @@ public class SmsReceiver extends BroadcastReceiver  {
     static String mobNumber = null;
     static long time;
 
+    DatabaseHelper databaseHelper;
+
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -43,7 +47,6 @@ public class SmsReceiver extends BroadcastReceiver  {
         handleReceiveRequest(context,intent);
 
         // Notifying the user about the incoming message
-
         NotificationChannel mChannel = null;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             mChannel = new NotificationChannel("01", "notification", NotificationManager.IMPORTANCE_HIGH);
@@ -62,14 +65,12 @@ public class SmsReceiver extends BroadcastReceiver  {
         }
 
 
-        // Adding Messages to database when the application is not active and sms is received
-
+        // Adding Messages to databasew
         DatabaseHelper databaseHelper = DatabaseHelper.getDB(context);
         databaseHelper.messageTableModalClassDao().addMessage(new MessageTableModalClass(messageImage,
                 mobNumber,messageReceived,TimeStampUtil.convert(time)));
 
     }
-
     public static void handleReceiveRequest(Context context,Intent intent){
 
 
@@ -134,4 +135,5 @@ public class SmsReceiver extends BroadcastReceiver  {
 
         return null; // The contact name is not found
     }
+
 }

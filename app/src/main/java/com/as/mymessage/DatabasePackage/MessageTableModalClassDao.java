@@ -18,12 +18,6 @@ public interface MessageTableModalClassDao {
     @Query("SELECT * FROM messagetablemodalclass order by id asc")
     List<MessageTableModalClass> getAllMessages();
 
-    @Query("SELECT DISTINCT sender FROM messagetablemodalclass")
-    List<String> getAllSenders();
-
-    @Query("SELECT message FROM messagetablemodalclass")
-    List<String> getAllMessagesList();
-
     @Insert
     void addMessage(MessageTableModalClass messageTableModalClass);
 

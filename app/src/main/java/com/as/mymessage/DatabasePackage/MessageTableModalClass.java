@@ -28,6 +28,9 @@ public class MessageTableModalClass {
     @ColumnInfo(name="time")
     private String time;
 
+    @ColumnInfo(name="timeStamp")
+    private long timeStamp;
+
    public MessageTableModalClass(int id, int image, String sender, String message,String date, String time) {
         this.id = id;
         this.image = image;
@@ -38,13 +41,14 @@ public class MessageTableModalClass {
     }
 
     @Ignore
-   public MessageTableModalClass(int image, String sender, String message,String date, String time) {
+   public MessageTableModalClass(int image, String sender, String message,String date, String time, long timeStamp) {
 
         this.image = image;
         this.sender = sender;
         this.message = message;
         this.date=date;
         this.time = time;
+        this.timeStamp = timeStamp;
     }
 
     public int getId() {
@@ -57,6 +61,14 @@ public class MessageTableModalClass {
 
     public int getImage() {
         return image;
+    }
+
+    public long getTimeStamp() {
+        return timeStamp;
+    }
+
+    public void setTimeStamp(long timeStamp) {
+        this.timeStamp = timeStamp;
     }
 
     public void setImage(int image) {

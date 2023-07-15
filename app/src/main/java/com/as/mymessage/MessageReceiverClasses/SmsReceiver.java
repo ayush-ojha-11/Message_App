@@ -62,38 +62,33 @@ public class SmsReceiver extends BroadcastReceiver  {
         // Adding Messages to database
         DatabaseHelper databaseHelper = DatabaseHelper.getDB(context);
         databaseHelper.messageTableModalClassDao().addMessage(new MessageTableModalClass(messageImage,
-                mobNumber,messageReceived,TimeStampUtil.convertToDate(time),TimeStampUtil.convertToTime(time)));
+                mobNumber,messageReceived,TimeStampUtil.convertToDate(time),TimeStampUtil.convertToTime(time), time));
 
     }
     public static void handleReceiveRequest(Context context,Intent intent){
 
-
         Bundle bundle =intent.getExtras();
-
-
         //pdus (Protocol Data Units)
-        Object[] smsObj = (Object[]) bundle.get("pdus");
-        String format = bundle.getString("format");
+        Object[] pdus = (Object[]) bundle.get("pdus");
+        SmsMessage[] messages = new SmsMessage[pdus.length];
 
-        for(Object obj: smsObj){
-            SmsMessage message = SmsMessage.createFromPdu((byte[]) obj, format);
-            mobNumber = message.getDisplayOriginatingAddress();
-            messageReceived = message.getDisplayMessageBody();
-            time = message.getTimestampMillis();
+        for (int i = 0; i < pdus.length; i++) {
+            messages[i] = SmsMessage.createFromPdu((byte[]) pdus[i]);
+        }
+        for (SmsMessage message : messages) {
+           messageReceived = message.getMessageBody();
+           mobNumber = message.getDisplayOriginatingAddress();
+           time = message.getTimestampMillis();
 
             if(isNumberInContacts(context,mobNumber)){
                 mobNumber = getContactNameFromNumber(context,mobNumber);
             }
-
-
             Log.d("MsgDetails","MobNo:"+mobNumber+" , Msg: "+messageReceived+" , Time: "+time);
 
             //Sending intent in the form of Serializable
-
-            Intent broadcastIntent = new Intent("MessageReceiver");
+            Intent broadcastIntent = new Intent();
             Bundle args = new Bundle();
-            RecyclerModalClass recyclerModalClass = new RecyclerModalClass(messageImage,mobNumber,messageReceived,TimeStampUtil.convertToDate(time),
-                    TimeStampUtil.convertToTime(time));
+            RecyclerModalClass recyclerModalClass = new RecyclerModalClass(messageImage,mobNumber,messageReceived,TimeStampUtil.convertToDate(time), TimeStampUtil.convertToTime(time));
             args.putSerializable("object",recyclerModalClass);
             broadcastIntent.setAction("SMS_RECEIVED_ACTION");
             broadcastIntent.putExtra("sms",args);

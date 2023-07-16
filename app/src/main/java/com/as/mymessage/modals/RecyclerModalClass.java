@@ -13,9 +13,9 @@ public class RecyclerModalClass implements Serializable {
 
     String date;
     String time;
+    long timeStammp;
 
-    public RecyclerModalClass (int id,int image, String name, String message, String date, String time) {
-        this.id = id;
+    public RecyclerModalClass (int image, String name, String message, String date, String time) {
         this.image = image;
         this.name = name;
         this.message = message;
@@ -23,13 +23,14 @@ public class RecyclerModalClass implements Serializable {
         this.time = time;
     }
     @Ignore
-    public RecyclerModalClass(int image, String name, String message,String date, String time) {
+    public RecyclerModalClass(int image, String name, String message,String date, String time, long timeStamp) {
 
         this.image = image;
         this.name = name;
         this.message = message;
         this.date = date;
         this.time = time;
+        this.timeStammp = timeStamp;
     }
 
     public int getId() {
@@ -78,5 +79,13 @@ public class RecyclerModalClass implements Serializable {
 
     public void setDate(String date) {
         this.date = date;
+    }
+
+    public long getTimeStammp() {
+        return timeStammp;
+    }
+
+    public void setTimeStammp(long timeStammp) {
+        this.timeStammp = timeStammp;
     }
 }

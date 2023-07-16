@@ -37,6 +37,7 @@ import com.as.mymessage.modals.RecyclerModalClass;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -44,11 +45,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.TreeMap;
 
 public class MainActivity extends AppCompatActivity {
 
 
-    List<RecyclerModalClass> recyclerModalClassList;
+    List<RecyclerModalClass> recyclerModalClassList = new ArrayList<>();
     IntentFilter intentFilter;
     ConversationRecyclerViewAdapter conversationRecyclerViewAdapter;
     DatabaseHelper databaseHelper;
@@ -95,7 +97,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         RecyclerView recyclerView = findViewById(R.id.recyclerView);
-        recyclerModalClassList = new ArrayList<>();
+       // recyclerModalClassList = new ArrayList<>();
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext());
         linearLayoutManager.setReverseLayout(true);
         linearLayoutManager.setStackFromEnd(true);
@@ -103,38 +105,44 @@ public class MainActivity extends AppCompatActivity {
         intentFilter = new IntentFilter();
         intentFilter.addAction("SMS_RECEIVED_ACTION");
 
+
         //Adding Data to hashmap from the database
+        try {
+            //Getting access to Room database
+            databaseHelper = DatabaseHelper.getDB(this);
 
-          //Getting access to Room database
-          databaseHelper = DatabaseHelper.getDB(this);
+            //Getting all the message along with other details
+            List<MessageTableModalClass> messageListFromDatabase = databaseHelper.messageTableModalClassDao().getAllMessages();
 
-          //Getting all the message along with other details
-          List<MessageTableModalClass> messageListFromDatabase = databaseHelper.messageTableModalClassDao().getAllMessages();
+            //Creating a hashmap to store keys as sender and a list of all the messages of that particular sender
+            Map<String, List<MessageTableModalClass>> messagesBySender = new LinkedHashMap<>();
 
-          //Creating a hashmap to store keys as sender and a list of all the messages of that particular sender
-          Map<String, List<MessageTableModalClass>> messagesBySender = new HashMap<>();
-
-          // Adding data to hashMap
-          for(MessageTableModalClass messageTableModalClass : messageListFromDatabase){
-              if(!messagesBySender.containsKey(messageTableModalClass.getSender())){
-                  // Add the sender and a corresponding list, if it is not already in the hashmap
-                  messagesBySender.put(messageTableModalClass.getSender(), new ArrayList<>());
-              }
-              // Add the message and details(messageTableModalClass) in the hashmap to the corresponding key values
-              Objects.requireNonNull(messagesBySender.get(messageTableModalClass.getSender())).add(messageTableModalClass);
-          }
+            // Adding data to hashMap
+            for (MessageTableModalClass messageTableModalClass : messageListFromDatabase) {
+                if (!messagesBySender.containsKey(messageTableModalClass.getSender())) {
+                    // Add the sender and a corresponding list, if it is not already in the hashmap
+                    messagesBySender.put(messageTableModalClass.getSender(), new ArrayList<>());
+                }
+                // Add the message and details(messageTableModalClass) in the hashmap to the corresponding key values
+                Objects.requireNonNull(messagesBySender.get(messageTableModalClass.getSender())).add(messageTableModalClass);
+            }
 
 
-          //Adding Data to recyclerview from the hashmap
+            //Adding Data to recyclerview from the hashmap
 
-          for(Map.Entry<String, List<MessageTableModalClass>> entry : messagesBySender.entrySet()){
-              MessageTableModalClass latestMessage = entry.getValue().get(entry.getValue().size()-1);
-              recyclerModalClassList.add(new RecyclerModalClass(latestMessage.getImage(), latestMessage.getSender(),
-                      latestMessage.getMessage(),latestMessage.getDate(),latestMessage.getTime()));
-          }
-        conversationRecyclerViewAdapter = new ConversationRecyclerViewAdapter(recyclerModalClassList, getApplicationContext());
-        recyclerView.setAdapter(conversationRecyclerViewAdapter);
-          conversationRecyclerViewAdapter.notifyDataSetChanged();
+            for (Map.Entry<String, List<MessageTableModalClass>> entry : messagesBySender.entrySet()) {
+                MessageTableModalClass latestMessage = entry.getValue().get(entry.getValue().size() - 1);
+                recyclerModalClassList.add(new RecyclerModalClass(latestMessage.getImage(), latestMessage.getSender(),
+                        latestMessage.getMessage(), latestMessage.getDate(), latestMessage.getTime(), latestMessage.getTimeStamp()));
+            }
+            // Sorting the list obtained from hashmap that most recent message appears on top
+            recyclerModalClassList.sort(Comparator.comparingLong(RecyclerModalClass::getTimeStammp));
+            conversationRecyclerViewAdapter = new ConversationRecyclerViewAdapter(recyclerModalClassList, getApplicationContext());
+            recyclerView.setAdapter(conversationRecyclerViewAdapter);
+            conversationRecyclerViewAdapter.notifyDataSetChanged();
+        }catch (Exception e){
+            e.getStackTrace();
+        }
 
     }
 

@@ -9,12 +9,14 @@ import android.content.IntentFilter;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Telephony;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
@@ -25,6 +27,7 @@ import com.as.mymessage.DatabasePackage.DatabaseHelper;
 import com.as.mymessage.DatabasePackage.MessageTableModalClass;
 import com.as.mymessage.R;
 import com.as.mymessage.adapters.ConversationRecyclerViewAdapter;
+import com.as.mymessage.adapters.RecyclerClickInterface;
 import com.as.mymessage.modals.RecyclerModalClass;
 
 import java.util.ArrayList;
@@ -34,7 +37,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements RecyclerClickInterface {
 
 
     private static final int REQ_CODE_DEFAULT_APP = 1000;
@@ -100,9 +103,11 @@ public class MainActivity extends AppCompatActivity {
         linearLayoutManager.setReverseLayout(true);
         linearLayoutManager.setStackFromEnd(true);
         recyclerView.setLayoutManager(linearLayoutManager);
-        conversationRecyclerViewAdapter = new ConversationRecyclerViewAdapter(recyclerModalClassList, getApplicationContext());
+        conversationRecyclerViewAdapter = new ConversationRecyclerViewAdapter(recyclerModalClassList, getApplicationContext(), this);
         intentFilter = new IntentFilter();
         intentFilter.addAction("SMS_RECEIVED_ACTION");
+        //Registering Context Menu on RecyclerView
+        registerForContextMenu(recyclerView);
 
         if(isDefaultSmsApp()){
             recyclerView.setVisibility(View.VISIBLE);
@@ -204,5 +209,24 @@ public class MainActivity extends AppCompatActivity {
 
             }
         }
+    }
+
+    @Override
+    public boolean onContextItemSelected(@NonNull MenuItem item) {
+
+        if (item.getItemId() == 121) {
+            Toast.makeText(MainActivity.this,"Deleted!",Toast.LENGTH_SHORT).show();
+        }
+
+        return super.onContextItemSelected(item);
+
+    }
+
+    @Override
+    public void onItemClick(int position) {
+
+        Intent chatActivityIntent = new Intent(MainActivity.this, ChatActivity.class);
+        startActivity(chatActivityIntent);
+
     }
 }

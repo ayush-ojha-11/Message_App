@@ -1,5 +1,6 @@
 package com.as.mymessage.adapters;
 
+import android.view.ContextMenu;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -9,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.as.mymessage.R;
 
-public class ConversationViewHolder extends RecyclerView.ViewHolder {
+public class ConversationViewHolder extends RecyclerView.ViewHolder implements View.OnCreateContextMenuListener {
 
     ImageView imageView;
     TextView nameView,bodyView,timeView;
@@ -21,6 +22,11 @@ public class ConversationViewHolder extends RecyclerView.ViewHolder {
         nameView = itemView.findViewById(R.id.textViewName);
         bodyView = itemView.findViewById(R.id.textViewBody);
         timeView = itemView.findViewById(R.id.textViewTime);
+        itemView.setOnCreateContextMenuListener(this);
     }
 
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        menu.add(this.getAdapterPosition(),121,0,"Delete");
+    }
 }

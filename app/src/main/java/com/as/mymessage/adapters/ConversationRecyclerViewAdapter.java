@@ -18,11 +18,14 @@ public class ConversationRecyclerViewAdapter extends RecyclerView.Adapter<Conver
 
     List<RecyclerModalClass> recyclerList;
     Context context;
+    private int position;
+    private final RecyclerClickInterface recyclerClickInterface;
 
 
-    public ConversationRecyclerViewAdapter(List<RecyclerModalClass> recyclerList, Context context) {
+    public ConversationRecyclerViewAdapter(List<RecyclerModalClass> recyclerList, Context context, RecyclerClickInterface recyclerClickInterface) {
         this.recyclerList = recyclerList;
         this.context = context;
+        this.recyclerClickInterface = recyclerClickInterface;
     }
 
     @NonNull
@@ -40,11 +43,26 @@ public class ConversationRecyclerViewAdapter extends RecyclerView.Adapter<Conver
         holder.bodyView.setText(recyclerList.get(position).getMessage());
         holder.timeView.setText(" "+recyclerList.get(position).getDate()+"\n"+recyclerList.get(position).getTime());
 
-        //OnClickListener
+        //OnLongClickListener
+
+        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                setPosition(holder.getPosition());
+                return false;
+            }
+        });
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                if(recyclerClickInterface != null){
+                    int pos = holder.getAdapterPosition();
+                    if(pos != RecyclerView.NO_POSITION){
+                        recyclerClickInterface.onItemClick(pos);
+                    }
+                }
 
             }
         });
@@ -54,4 +72,13 @@ public class ConversationRecyclerViewAdapter extends RecyclerView.Adapter<Conver
     public int getItemCount() {
         return recyclerList.size();
     }
+
+    public int getPosition() {
+        return position;
+    }
+
+    public void setPosition(int position) {
+        this.position = position;
+    }
+
 }

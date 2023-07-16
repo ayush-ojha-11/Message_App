@@ -9,10 +9,46 @@
     tools:context=".activities.MainActivity">
 
 
+    <LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+        android:visibility="gone"
+    android:layout_centerInParent="true"
+    android:id="@+id/linearLayout">
+
+    <com.airbnb.lottie.LottieAnimationView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:lottie_autoPlay="true"
+        android:layout_gravity="center_horizontal"
+        app:lottie_rawRes="@raw/messageanim"/>
+
+    <TextView
+        android:id="@+id/textDesc"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:textSize="16sp"
+        android:text="To use this app, make it your default SMS app"
+        tools:ignore="HardcodedText" />
+
+     <Button
+         android:id="@+id/setDefaultBtn"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:text="Set default SMS app"
+         android:layout_margin="15dp"
+         android:layout_gravity="center"
+         tools:ignore="HardcodedText" />
+</LinearLayout>
+
+
     <androidx.recyclerview.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="5dp"
+        android:visibility="gone"
         android:id="@+id/recyclerView"/>
 
 </RelativeLayout>

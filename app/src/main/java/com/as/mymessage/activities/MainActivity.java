@@ -1,59 +1,52 @@
 package com.as.mymessage.activities;
 
-import static android.Manifest.permission.POST_NOTIFICATIONS;
-
-import androidx.activity.result.ActivityResultCallback;
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.app.NotificationCompat;
-import androidx.core.app.TaskStackBuilder;
-import androidx.core.content.ContextCompat;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
-import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
+import android.app.role.RoleManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
+import android.provider.Telephony;
+import android.view.View;
+import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.as.mymessage.DatabasePackage.DatabaseHelper;
 import com.as.mymessage.DatabasePackage.MessageTableModalClass;
-import com.as.mymessage.adapters.ConversationRecyclerViewAdapter;
 import com.as.mymessage.R;
+import com.as.mymessage.adapters.ConversationRecyclerViewAdapter;
 import com.as.mymessage.modals.RecyclerModalClass;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
-import java.util.TreeMap;
 
 public class MainActivity extends AppCompatActivity {
 
 
+    private static final int REQ_CODE_DEFAULT_APP = 1000;
     List<RecyclerModalClass> recyclerModalClassList = new ArrayList<>();
     IntentFilter intentFilter;
     ConversationRecyclerViewAdapter conversationRecyclerViewAdapter;
     DatabaseHelper databaseHelper;
+    LinearLayout linearLayout;
+    RecyclerView recyclerView;
+    TextView textView;
+    Button setDefault;
+
 
 
 
@@ -90,20 +83,46 @@ public class MainActivity extends AppCompatActivity {
     };
 
 
+    @RequiresApi(api = Build.VERSION_CODES.Q)
     @SuppressLint("NotifyDataSetChanged")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        // This linear layout holds the animation and set Default SMS app button and is displayed only
+        // when the app is not made as default SMS app
+         linearLayout = findViewById(R.id.linearLayout);
+         recyclerView = findViewById(R.id.recyclerView);
+         textView = findViewById(R.id.textDesc);
+         setDefault = findViewById(R.id.setDefaultBtn);
 
-        RecyclerView recyclerView = findViewById(R.id.recyclerView);
-       // recyclerModalClassList = new ArrayList<>();
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext());
         linearLayoutManager.setReverseLayout(true);
         linearLayoutManager.setStackFromEnd(true);
         recyclerView.setLayoutManager(linearLayoutManager);
+        conversationRecyclerViewAdapter = new ConversationRecyclerViewAdapter(recyclerModalClassList, getApplicationContext());
         intentFilter = new IntentFilter();
         intentFilter.addAction("SMS_RECEIVED_ACTION");
+
+        if(isDefaultSmsApp()){
+            recyclerView.setVisibility(View.VISIBLE);
+            linearLayout.setVisibility(View.GONE);
+        }
+
+        else{
+            recyclerView.setVisibility(View.GONE);
+            linearLayout.setVisibility(View.VISIBLE);
+            setDefault.setOnClickListener(v -> {
+                // Prompting user to select app as default
+                RoleManager roleManager = getApplicationContext().getSystemService(RoleManager.class);
+                Intent roleRequestIntent = roleManager.createRequestRoleIntent(RoleManager.ROLE_SMS);
+                startActivityForResult(roleRequestIntent, REQ_CODE_DEFAULT_APP);
+            });
+        }
+
+
+       // recyclerModalClassList = new ArrayList<>();
+
 
 
         //Adding Data to hashmap from the database
@@ -137,7 +156,6 @@ public class MainActivity extends AppCompatActivity {
             }
             // Sorting the list obtained from hashmap that most recent message appears on top
             recyclerModalClassList.sort(Comparator.comparingLong(RecyclerModalClass::getTimeStammp));
-            conversationRecyclerViewAdapter = new ConversationRecyclerViewAdapter(recyclerModalClassList, getApplicationContext());
             recyclerView.setAdapter(conversationRecyclerViewAdapter);
             conversationRecyclerViewAdapter.notifyDataSetChanged();
         }catch (Exception e){
@@ -164,4 +182,27 @@ public class MainActivity extends AppCompatActivity {
         finish();
     }
 
+    public boolean isDefaultSmsApp() {
+        return this.getPackageName().equals(Telephony.Sms.getDefaultSmsPackage(this));
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        // Checking if it is the Prompt intent request code
+        if(requestCode == REQ_CODE_DEFAULT_APP){
+
+            //True if user clicked OK
+            if(resultCode == RESULT_OK){
+                Toast.makeText(MainActivity.this,"App set as default",Toast.LENGTH_SHORT).show();
+                linearLayout.setVisibility(View.GONE);
+                recyclerView.setVisibility(View.VISIBLE);
+            }
+            else if(resultCode == RESULT_CANCELED){
+                Toast.makeText(MainActivity.this,"App need to be set as default to use it!",Toast.LENGTH_SHORT).show();
+
+            }
+        }
+    }
 }

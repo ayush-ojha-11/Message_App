@@ -94,7 +94,7 @@ public class SmsReceiver extends BroadcastReceiver  {
             //Sending intent in the form of Serializable
             Intent broadcastIntent = new Intent();
             Bundle args = new Bundle();
-            RecyclerModalClass recyclerModalClass = new RecyclerModalClass(messageImage,contactName,mobNumber,messageReceived,TimeStampUtil.convertToDate(time), TimeStampUtil.convertToTime(time));
+            RecyclerModalClass recyclerModalClass = new RecyclerModalClass(messageImage,mobNumber,contactName,messageReceived,TimeStampUtil.convertToDate(time), TimeStampUtil.convertToTime(time));
             args.putSerializable("object",recyclerModalClass);
             broadcastIntent.setAction("SMS_RECEIVED_ACTION");
             broadcastIntent.putExtra("sms",args);

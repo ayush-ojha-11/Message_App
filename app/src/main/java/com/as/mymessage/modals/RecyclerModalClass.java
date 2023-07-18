@@ -27,9 +27,7 @@ public class RecyclerModalClass implements Serializable {
     //For intent through SMSReceiver
     public RecyclerModalClass (int image, String mobNumber,String contactName, String message, String date, String time) {
         this.image = image;
-        if(contactName != null)
-            this.contactName = contactName;
-        else this.contactName= mobNumber;
+        this.contactName = contactName;
         this.mobNumber= mobNumber;
         this.message = message;
         this.date = date;

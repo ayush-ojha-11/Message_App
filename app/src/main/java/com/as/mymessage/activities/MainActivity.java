@@ -1,5 +1,8 @@
 package com.as.mymessage.activities;
 
+import static com.as.mymessage.util.ContactCheckerUtil.getContactNameFromNumber;
+import static com.as.mymessage.util.ContactCheckerUtil.isNumberInContacts;
+
 import android.annotation.SuppressLint;
 import android.app.role.RoleManager;
 import android.content.BroadcastReceiver;
@@ -25,11 +28,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.as.mymessage.DatabasePackage.DatabaseHelper;
 import com.as.mymessage.DatabasePackage.MessageTableModalClass;
+import com.as.mymessage.MessageReceiverClasses.SmsReceiver;
 import com.as.mymessage.R;
 import com.as.mymessage.adapters.ConversationRecyclerViewAdapter;
 import com.as.mymessage.adapters.RecyclerClickInterface;
 import com.as.mymessage.modals.RecyclerModalClass;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
@@ -42,6 +47,8 @@ public class MainActivity extends AppCompatActivity implements RecyclerClickInte
 
     private static final int REQ_CODE_DEFAULT_APP = 1000;
     List<RecyclerModalClass> recyclerModalClassList = new ArrayList<>();
+
+    Map<String, List<MessageTableModalClass>> messagesBySender;
     IntentFilter intentFilter;
     ConversationRecyclerViewAdapter conversationRecyclerViewAdapter;
     DatabaseHelper databaseHelper;
@@ -64,7 +71,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerClickInte
             boolean found = false;
             RecyclerModalClass foundItem = null;
             for(RecyclerModalClass item : recyclerModalClassList){
-                if(item.getName().equalsIgnoreCase(incomingMessage.getName())) {
+                if(item.getContactName().equalsIgnoreCase(incomingMessage.getContactName())) {
                     item.setMessage(incomingMessage.getMessage());
                     item.setDate(incomingMessage.getDate());
                     item.setTime(incomingMessage.getTime());
@@ -138,17 +145,17 @@ public class MainActivity extends AppCompatActivity implements RecyclerClickInte
             //Getting all the message along with other details
             List<MessageTableModalClass> messageListFromDatabase = databaseHelper.messageTableModalClassDao().getAllMessages();
 
-            //Creating a hashmap to store keys as sender and a list of all the messages of that particular sender
-            Map<String, List<MessageTableModalClass>> messagesBySender = new LinkedHashMap<>();
+            //Initializing the hashmap to store keys as sender and a list of all the messages of that particular sender
+            messagesBySender = new LinkedHashMap<>();
 
             // Adding data to hashMap
             for (MessageTableModalClass messageTableModalClass : messageListFromDatabase) {
-                if (!messagesBySender.containsKey(messageTableModalClass.getSender())) {
+                if (!messagesBySender.containsKey(messageTableModalClass.getMobNumber())) {
                     // Add the sender and a corresponding list, if it is not already in the hashmap
-                    messagesBySender.put(messageTableModalClass.getSender(), new ArrayList<>());
+                    messagesBySender.put(messageTableModalClass.getMobNumber(), new ArrayList<>());
                 }
                 // Add the message and details(messageTableModalClass) in the hashmap to the corresponding key values
-                Objects.requireNonNull(messagesBySender.get(messageTableModalClass.getSender())).add(messageTableModalClass);
+                Objects.requireNonNull(messagesBySender.get(messageTableModalClass.getMobNumber())).add(messageTableModalClass);
             }
 
 
@@ -156,7 +163,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerClickInte
 
             for (Map.Entry<String, List<MessageTableModalClass>> entry : messagesBySender.entrySet()) {
                 MessageTableModalClass latestMessage = entry.getValue().get(entry.getValue().size() - 1);
-                recyclerModalClassList.add(new RecyclerModalClass(latestMessage.getImage(), latestMessage.getSender(),
+                recyclerModalClassList.add(new RecyclerModalClass(latestMessage.getImage(), latestMessage.getMobNumber(),latestMessage.getContactName(),
                         latestMessage.getMessage(), latestMessage.getDate(), latestMessage.getTime(), latestMessage.getTimeStamp()));
             }
             // Sorting the list obtained from hashmap that most recent message appears on top
@@ -225,8 +232,12 @@ public class MainActivity extends AppCompatActivity implements RecyclerClickInte
     @Override
     public void onItemClick(int position) {
 
-        Intent chatActivityIntent = new Intent(MainActivity.this, ChatActivity.class);
-        startActivity(chatActivityIntent);
+        String senderClicked = recyclerModalClassList.get(position).getMobNumber();
+        List<MessageTableModalClass> messagesByTheSenderClicked = new ArrayList<>();
+        messagesByTheSenderClicked = messagesBySender.get(senderClicked);
+        Intent intent = new Intent(MainActivity.this,ChatActivity.class);
+        intent.putExtra("list",(Serializable) messagesByTheSenderClicked);
+        startActivity(intent);
 
     }
 }

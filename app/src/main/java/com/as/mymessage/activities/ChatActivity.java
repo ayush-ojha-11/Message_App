@@ -5,11 +5,16 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 
+import com.as.mymessage.DatabasePackage.MessageTableModalClass;
 import com.as.mymessage.R;
 import com.as.mymessage.adapters.ChatRecyclerViewAdapter;
 import com.as.mymessage.modals.ChatRecyclerModal;
+import com.as.mymessage.modals.RecyclerModalClass;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +22,7 @@ import java.util.List;
 public class ChatActivity extends AppCompatActivity {
 
     RecyclerView chatRecyclerView;
-    List<ChatRecyclerModal> messages;
+    List<MessageTableModalClass> messages;
 
 
     @SuppressLint("NotifyDataSetChanged")
@@ -28,7 +33,9 @@ public class ChatActivity extends AppCompatActivity {
 
            chatRecyclerView = findViewById(R.id.chat_recycler_view);
            messages = new ArrayList<>();
-           messages.add(new ChatRecyclerModal("AYush Here"));
+
+           Intent i = getIntent();
+           messages = (List<MessageTableModalClass>) i.getSerializableExtra("list");
            LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
            chatRecyclerView.setLayoutManager(linearLayoutManager);
            ChatRecyclerViewAdapter chatAdapter = new ChatRecyclerViewAdapter(getApplicationContext(),messages);
@@ -36,4 +43,13 @@ public class ChatActivity extends AppCompatActivity {
            chatAdapter.notifyDataSetChanged();
 
     }
+
+    private final BroadcastReceiver intentReceiver  = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+
+            Bundle args = intent.getBundleExtra("sms");
+            RecyclerModalClass incomingMessage = (RecyclerModalClass) args.getSerializable("object");
+        }
+    };
 }

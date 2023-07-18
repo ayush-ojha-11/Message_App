@@ -1,5 +1,8 @@
 package com.as.mymessage.MessageReceiverClasses;
 
+import static com.as.mymessage.util.ContactCheckerUtil.getContactNameFromNumber;
+import static com.as.mymessage.util.ContactCheckerUtil.isNumberInContacts;
+
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -21,6 +24,7 @@ import com.as.mymessage.DatabasePackage.MessageTableModalClass;
 import com.as.mymessage.R;
 import com.as.mymessage.activities.MainActivity;
 import com.as.mymessage.modals.RecyclerModalClass;
+import com.as.mymessage.util.ContactCheckerUtil;
 import com.as.mymessage.util.TimeStampUtil;
 
 
@@ -28,9 +32,10 @@ public class SmsReceiver extends BroadcastReceiver  {
 
    private static final int messageImage = R.drawable.baseline_message_24;
 
-    static String messageReceived = null;
-    static String mobNumber = null;
-    static long time;
+    String messageReceived = null;
+    String mobNumber = null;
+    String contactName = null;
+    long time;
 
     DatabaseHelper databaseHelper;
 
@@ -47,7 +52,8 @@ public class SmsReceiver extends BroadcastReceiver  {
             mChannel = new NotificationChannel("01", "notification", NotificationManager.IMPORTANCE_HIGH);
             NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context, "01");
             mBuilder.setSmallIcon(messageImage);
-            mBuilder.setContentTitle(mobNumber);
+            if(contactName != null) mBuilder.setContentTitle(contactName);
+            else mBuilder.setContentTitle(mobNumber);
             mBuilder.setContentText(messageReceived);
             mBuilder.setStyle(new NotificationCompat.BigTextStyle().bigText(messageReceived));
             Intent notificationIntent = new Intent(context, MainActivity.class);
@@ -62,10 +68,10 @@ public class SmsReceiver extends BroadcastReceiver  {
         // Adding Messages to database
         DatabaseHelper databaseHelper = DatabaseHelper.getDB(context);
         databaseHelper.messageTableModalClassDao().addMessage(new MessageTableModalClass(messageImage,
-                mobNumber,messageReceived,TimeStampUtil.convertToDate(time),TimeStampUtil.convertToTime(time), time));
+                mobNumber,contactName,messageReceived,TimeStampUtil.convertToDate(time),TimeStampUtil.convertToTime(time), time));
 
     }
-    public static void handleReceiveRequest(Context context,Intent intent){
+    public void handleReceiveRequest(Context context,Intent intent){
 
         Bundle bundle =intent.getExtras();
         //pdus (Protocol Data Units)
@@ -81,14 +87,14 @@ public class SmsReceiver extends BroadcastReceiver  {
            time = message.getTimestampMillis();
 
             if(isNumberInContacts(context,mobNumber)){
-                mobNumber = getContactNameFromNumber(context,mobNumber);
+                contactName = getContactNameFromNumber(context,mobNumber);
             }
             Log.d("MsgDetails","MobNo:"+mobNumber+" , Msg: "+messageReceived+" , Time: "+time);
 
             //Sending intent in the form of Serializable
             Intent broadcastIntent = new Intent();
             Bundle args = new Bundle();
-            RecyclerModalClass recyclerModalClass = new RecyclerModalClass(messageImage,mobNumber,messageReceived,TimeStampUtil.convertToDate(time), TimeStampUtil.convertToTime(time));
+            RecyclerModalClass recyclerModalClass = new RecyclerModalClass(messageImage,contactName,mobNumber,messageReceived,TimeStampUtil.convertToDate(time), TimeStampUtil.convertToTime(time));
             args.putSerializable("object",recyclerModalClass);
             broadcastIntent.setAction("SMS_RECEIVED_ACTION");
             broadcastIntent.putExtra("sms",args);
@@ -96,34 +102,5 @@ public class SmsReceiver extends BroadcastReceiver  {
         }
     }
 
-   public static boolean isNumberInContacts (Context context, String number) {
-        Uri uri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, Uri.encode(number));
-        String[] projection = new String[]{ContactsContract.PhoneLookup._ID};
-
-        try (Cursor cursor = context.getContentResolver().query(uri, projection, null, null, null)) {
-            if (cursor != null && cursor.moveToFirst()) {
-                return true; // The number is found in contacts
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return false; // The number is not found in contacts
-    }
-    private static String getContactNameFromNumber(Context context, String number) {
-        Uri uri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, Uri.encode(number));
-        String[] projection = new String[]{ContactsContract.PhoneLookup.DISPLAY_NAME};
-
-        try (Cursor cursor = context.getContentResolver().query(uri, projection, null, null, null)) {
-            if (cursor != null && cursor.moveToFirst()) {
-                int nameIndex = cursor.getColumnIndex(ContactsContract.PhoneLookup.DISPLAY_NAME);
-                return cursor.getString(nameIndex); // Return the contact name
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return null; // The contact name is not found
-    }
 
 }

@@ -6,8 +6,10 @@ import androidx.room.Entity;
 import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
+import java.io.Serializable;
+
 @Entity
-public class MessageTableModalClass {
+public class MessageTableModalClass implements Serializable {
 
     @PrimaryKey(autoGenerate = true)
     private int id;
@@ -15,9 +17,12 @@ public class MessageTableModalClass {
     @ColumnInfo(name="image")
     private int image;
 
-    @ColumnInfo(name="sender")
+    @ColumnInfo(name="mobNumber")
     @NonNull
-    private String sender;
+    private String mobNumber;
+
+    @ColumnInfo(name="contactName")
+    private String contactName;
 
     @ColumnInfo(name="message")
     private String message;
@@ -31,20 +36,11 @@ public class MessageTableModalClass {
     @ColumnInfo(name="timeStamp")
     private long timeStamp;
 
-   public MessageTableModalClass(int id, int image, String sender, String message,String date, String time) {
-        this.id = id;
-        this.image = image;
-        this.sender = sender;
-        this.message = message;
-        this.date = date;
-        this.time = time;
-    }
-
-    @Ignore
-   public MessageTableModalClass(int image, String sender, String message,String date, String time, long timeStamp) {
+    public MessageTableModalClass(int image, @NonNull String mobNumber, String contactName, String message, String date, String time, long timeStamp) {
 
         this.image = image;
-        this.sender = sender;
+        this.mobNumber = mobNumber;
+        this.contactName = contactName;
         this.message = message;
         this.date=date;
         this.time = time;
@@ -76,13 +72,22 @@ public class MessageTableModalClass {
     }
 
     @NonNull
-    public String getSender() {
-        return sender;
+    public String getMobNumber() {
+        return mobNumber;
     }
 
-    public void setSender(@NonNull String sender) {
-        this.sender = sender;
+    public void setMobNumber(@NonNull String mobNumber) {
+        this.mobNumber = mobNumber;
     }
+
+    public String getContactName() {
+        return contactName;
+    }
+
+    public void setContactName(String contactName) {
+        this.contactName = contactName;
+    }
+
 
     public String getMessage() {
         return message;

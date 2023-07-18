@@ -8,25 +8,41 @@ import java.io.Serializable;
 public class RecyclerModalClass implements Serializable {
     int id;
     int image;
-    String name;
+    String contactName;
+    String mobNumber;
     String message;
 
     String date;
     String time;
     long timeStammp;
 
-    public RecyclerModalClass (int image, String name, String message, String date, String time) {
+    public String getMobNumber() {
+        return mobNumber;
+    }
+
+    public void setMobNumber(String mobNumber) {
+        this.mobNumber = mobNumber;
+    }
+
+    //For intent through SMSReceiver
+    public RecyclerModalClass (int image, String mobNumber,String contactName, String message, String date, String time) {
         this.image = image;
-        this.name = name;
+        if(contactName != null)
+            this.contactName = contactName;
+        else this.contactName= mobNumber;
+        this.mobNumber= mobNumber;
         this.message = message;
         this.date = date;
         this.time = time;
     }
+
+    // For main activity
     @Ignore
-    public RecyclerModalClass(int image, String name, String message,String date, String time, long timeStamp) {
+    public RecyclerModalClass(int image, String mobNumber,String contactName, String message,String date, String time, long timeStamp) {
 
         this.image = image;
-        this.name = name;
+        this.contactName = contactName;
+        this.mobNumber = mobNumber;
         this.message = message;
         this.date = date;
         this.time = time;
@@ -49,12 +65,12 @@ public class RecyclerModalClass implements Serializable {
         this.image = image;
     }
 
-    public String getName() {
-        return name;
+    public String getContactName() {
+        return contactName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setContactName(String contactName) {
+        this.contactName = contactName;
     }
 
     public String getMessage() {

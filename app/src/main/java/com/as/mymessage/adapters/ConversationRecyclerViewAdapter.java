@@ -39,7 +39,9 @@ public class ConversationRecyclerViewAdapter extends RecyclerView.Adapter<Conver
     public void onBindViewHolder(@NonNull ConversationViewHolder holder, int position) {
 
         holder.imageView.setImageResource(recyclerList.get(position).getImage());
-        holder.nameView.setText(recyclerList.get(position).getName());
+        String sender = null;
+        sender = recyclerList.get(position).getContactName() != null ? recyclerList.get(position).getContactName() : recyclerList.get(position).getMobNumber();
+        holder.nameView.setText(sender);
         holder.bodyView.setText(recyclerList.get(position).getMessage());
         holder.timeView.setText(" "+recyclerList.get(position).getDate()+"\n"+recyclerList.get(position).getTime());
 
@@ -66,6 +68,7 @@ public class ConversationRecyclerViewAdapter extends RecyclerView.Adapter<Conver
 
             }
         });
+
     }
 
     @Override

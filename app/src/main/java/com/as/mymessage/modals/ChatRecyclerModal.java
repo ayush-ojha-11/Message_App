@@ -1,6 +1,8 @@
 package com.as.mymessage.modals;
 
-public class ChatRecyclerModal {
+import java.io.Serializable;
+
+public class ChatRecyclerModal  {
     String message;
 
     public ChatRecyclerModal(String message) {

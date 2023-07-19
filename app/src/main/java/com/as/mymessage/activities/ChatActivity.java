@@ -5,14 +5,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
-import android.app.PendingIntent;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.telephony.SmsManager;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -23,8 +18,7 @@ import com.as.mymessage.DatabasePackage.MessageTableModalClass;
 import com.as.mymessage.DatabasePackage.OutGoingMessageTableModalClass;
 import com.as.mymessage.R;
 import com.as.mymessage.adapters.ChatRecyclerViewAdapter;
-import com.as.mymessage.modals.ChatRecyclerModal;
-import com.as.mymessage.modals.RecyclerModalClass;
+import com.as.mymessage.util.ChatMessagePOJO;
 import com.as.mymessage.util.ContactCheckerUtil;
 import com.as.mymessage.util.TimeStampUtil;
 
@@ -34,7 +28,6 @@ import java.util.List;
 public class ChatActivity extends AppCompatActivity {
 
     RecyclerView chatRecyclerView;
-    List<MessageTableModalClass> messages;
 
     Button sendButton;
     EditText messageEditText;
@@ -42,6 +35,10 @@ public class ChatActivity extends AppCompatActivity {
     String receiverMobNumber;
 
     String receiverContactName;
+
+    List<ChatMessagePOJO> allMessages;
+    List<MessageTableModalClass> receivedMessages;
+    List<OutGoingMessageTableModalClass> sentMessages;
 
 
     @SuppressLint("NotifyDataSetChanged")
@@ -55,7 +52,7 @@ public class ChatActivity extends AppCompatActivity {
           DatabaseHelper databaseHelper = DatabaseHelper.getDB(this);
 
            chatRecyclerView = findViewById(R.id.chat_recycler_view);
-           messages = new ArrayList<>();
+           receivedMessages = new ArrayList<>();
 
            //Getting intent from MainActivity
            Intent i = getIntent();
@@ -67,10 +64,21 @@ public class ChatActivity extends AppCompatActivity {
                receiverContactName = ContactCheckerUtil.getContactNameFromNumber(this,receiverMobNumber);
            }
 
-           messages = (List<MessageTableModalClass>) i.getSerializableExtra("list");
+           receivedMessages = (List<MessageTableModalClass>) i.getSerializableExtra("list");
+           sentMessages = databaseHelper.outgoingMessageTableDao().getAllSentMessages(receiverMobNumber);
+
+            allMessages = new ArrayList<>();
+            for(MessageTableModalClass message : receivedMessages){
+                allMessages.add(new ChatMessagePOJO(false, message.getMessage(), message.getTime()));
+            }
+
+            for(OutGoingMessageTableModalClass message : sentMessages){
+                allMessages.add(new ChatMessagePOJO(true, message.getMessage(), message.getTime()));
+            }
+
            LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
            chatRecyclerView.setLayoutManager(linearLayoutManager);
-           ChatRecyclerViewAdapter chatAdapter = new ChatRecyclerViewAdapter(getApplicationContext(),messages);
+           ChatRecyclerViewAdapter chatAdapter = new ChatRecyclerViewAdapter(getApplicationContext(), allMessages);
            chatRecyclerView.setAdapter(chatAdapter);
            chatAdapter.notifyDataSetChanged();
 
@@ -79,15 +87,21 @@ public class ChatActivity extends AppCompatActivity {
                public void onClick(View v) {
 
                    String message = messageEditText.getText().toString();
+                   messageEditText.getText().clear();
                    SmsManager smsManager = SmsManager.getDefault();
+//                   Intent thisIntent = new Intent(getApplicationContext(), ChatActivity.class);
+//                   PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 1, thisIntent, PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_IMMUTABLE);
                    smsManager.sendTextMessage(receiverMobNumber,null,message,null,null);
                    Toast.makeText(ChatActivity.this,"Message sent!",Toast.LENGTH_SHORT).show();
 
-
-                   databaseHelper.outgoingMessageTableDao().addSentMessage(new OutGoingMessageTableModalClass(
+                   OutGoingMessageTableModalClass sentMessage = new OutGoingMessageTableModalClass(
                            R.drawable.baseline_message_24,receiverMobNumber,receiverContactName,message,TimeStampUtil.getDate()
-                           ,TimeStampUtil.getTime(),TimeStampUtil.getTheTimeStamp()));
+                           ,TimeStampUtil.getTime(),TimeStampUtil.getTheTimeStamp());
 
+                   allMessages.add(new ChatMessagePOJO(true, sentMessage.getMessage(), sentMessage.getTime()));
+                   chatAdapter.notifyDataSetChanged();
+
+                   databaseHelper.outgoingMessageTableDao().addSentMessage(sentMessage);
                }
            });
 

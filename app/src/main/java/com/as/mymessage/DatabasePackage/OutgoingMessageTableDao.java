@@ -9,8 +9,8 @@ import java.util.List;
 @Dao
 public interface OutgoingMessageTableDao {
 
-    @Query("SELECT * FROM outgoingmessagetablemodalclass order by id asc")
-    List<OutGoingMessageTableModalClass> getAllSentMessages();
+    @Query("SELECT * FROM outgoingmessagetablemodalclass where mobNumber=:mobNumber order by id asc")
+    List<OutGoingMessageTableModalClass> getAllSentMessages(String mobNumber);
 
     @Insert
     void addSentMessage(OutGoingMessageTableModalClass outGoingMessageTableModalClass);

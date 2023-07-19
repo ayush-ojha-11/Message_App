@@ -6,9 +6,9 @@ import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
 
-@Database(entities = {MessageTableModalClass.class},exportSchema = false,version = 5)
+@Database(entities = {MessageTableModalClass.class, OutGoingMessageTableModalClass.class},exportSchema = false, version = 30)
 public abstract class DatabaseHelper extends RoomDatabase {
-    private static final String DB_NAME = "messagedb";
+    private static final String DB_NAME = "MessageDatabase";
 
     private static DatabaseHelper instance;
 
@@ -22,5 +22,6 @@ public abstract class DatabaseHelper extends RoomDatabase {
         return instance;
     }
 
-    public abstract MessageTableModalClassDao messageTableModalClassDao();
+    public abstract MessageTableDao messageTableModalClassDao();
+    public abstract OutgoingMessageTableDao outgoingMessageTableDao();
 }

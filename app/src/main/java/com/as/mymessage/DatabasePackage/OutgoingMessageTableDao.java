@@ -14,6 +14,4 @@ public interface OutgoingMessageTableDao {
 
     @Insert
     void addSentMessage(OutGoingMessageTableModalClass outGoingMessageTableModalClass);
-
-
 }

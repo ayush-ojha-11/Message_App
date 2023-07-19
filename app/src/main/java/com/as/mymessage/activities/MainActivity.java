@@ -246,6 +246,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerClickInte
         messagesByTheSenderClicked = messagesBySender.get(senderClicked);
         Intent intent = new Intent(MainActivity.this,ChatActivity.class);
         intent.putExtra("list",(Serializable) messagesByTheSenderClicked);
+        intent.putExtra("senderMobNumber",senderClicked);
         startActivity(intent);
 
     }

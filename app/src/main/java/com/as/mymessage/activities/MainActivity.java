@@ -4,18 +4,24 @@ import static com.as.mymessage.util.ContactCheckerUtil.getContactNameFromNumber;
 import static com.as.mymessage.util.ContactCheckerUtil.isNumberInContacts;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.app.role.RoleManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.Configuration;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Telephony;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -34,6 +40,7 @@ import com.as.mymessage.adapters.ConversationRecyclerViewAdapter;
 import com.as.mymessage.adapters.RecyclerClickInterface;
 import com.as.mymessage.modals.RecyclerModalClass;
 import com.as.mymessage.util.TimeStampUtil;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -57,6 +64,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerClickInte
     RecyclerView recyclerView;
     TextView textView;
     Button setDefault;
+    RelativeLayout parentLayout;
 
 
 
@@ -87,7 +95,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerClickInte
             }
             // Add the message and details(messageTableModalClass) in the hashmap to the corresponding key values
             Objects.requireNonNull(messagesBySender.get(incomingMessage.getMobNumber())).add(new MessageTableModalClass(incomingMessage.getImage(),
-                    incomingMessage.getMobNumber(),incomingMessage.getContactName(),incomingMessage.getMessage(),incomingMessage.getDate(),incomingMessage.getTime(), incomingMessage.getTimeStammp()));
+                    incomingMessage.getMobNumber(),incomingMessage.getContactName(),incomingMessage.getMessage(),incomingMessage.getDate(),incomingMessage.getTime(), incomingMessage.getTimeStamp()));
 
             if(found){
                 //move item from existing position to last index
@@ -108,12 +116,15 @@ public class MainActivity extends AppCompatActivity implements RecyclerClickInte
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+
         // This linear layout holds the animation and set Default SMS app button and is displayed only
         // when the app is not made as default SMS app
          linearLayout = findViewById(R.id.linearLayout);
          recyclerView = findViewById(R.id.recyclerView);
          textView = findViewById(R.id.textDesc);
          setDefault = findViewById(R.id.setDefaultBtn);
+         parentLayout = findViewById(R.id.parent_layout);
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext());
         linearLayoutManager.setReverseLayout(true);
@@ -128,8 +139,53 @@ public class MainActivity extends AppCompatActivity implements RecyclerClickInte
         if(isDefaultSmsApp()){
             recyclerView.setVisibility(View.VISIBLE);
             linearLayout.setVisibility(View.GONE);
-        }
+            //Adding Data to hashmap from the database
+            try {
+                //Getting access to Room database
+                databaseHelper = DatabaseHelper.getDB(this);
 
+                //Getting all the message along with other details
+                List<MessageTableModalClass> messageListFromDatabase = databaseHelper.messageTableModalClassDao().getAllMessages();
+
+                //Initializing the hashmap to store keys as sender and a list of all the messages of that particular sender
+//            messagesBySender = new LinkedHashMap<>();
+
+                // Adding data to hashMap
+                for (MessageTableModalClass messageTableModalClass : messageListFromDatabase) {
+                    if (!messagesBySender.containsKey(messageTableModalClass.getMobNumber())) {
+                        // Add the sender and a corresponding list, if it is not already in the hashmap
+                        messagesBySender.put(messageTableModalClass.getMobNumber(), new ArrayList<>());
+                    }
+                    // Add the message and details(messageTableModalClass) in the hashmap to the corresponding key values
+                    Objects.requireNonNull(messagesBySender.get(messageTableModalClass.getMobNumber())).add(messageTableModalClass);
+                }
+
+
+                //Adding Data to recyclerview from the hashmap
+
+                for (Map.Entry<String, List<MessageTableModalClass>> entry : messagesBySender.entrySet()) {
+                    MessageTableModalClass latestMessage = entry.getValue().get(entry.getValue().size() - 1);
+                    recyclerModalClassList.add(new RecyclerModalClass(latestMessage.getImage(), latestMessage.getMobNumber(),latestMessage.getContactName(),
+                            latestMessage.getMessage(), latestMessage.getDate(), latestMessage.getTime(), latestMessage.getTimeStamp()));
+                }
+                // Sorting the list obtained from hashmap that most recent message appears on top
+                recyclerModalClassList.sort(Comparator.comparingLong(RecyclerModalClass::getTimeStamp));
+                recyclerView.setAdapter(conversationRecyclerViewAdapter);
+                conversationRecyclerViewAdapter.notifyDataSetChanged();
+            }catch (Exception e){
+                e.getStackTrace();
+            }
+            if(conversationRecyclerViewAdapter.getItemCount()==0){
+                Snackbar snackbar = Snackbar.make(parentLayout,R.string.snackbar_msg,Snackbar.LENGTH_INDEFINITE);
+                snackbar.setAction("OK", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        snackbar.dismiss();
+
+                    }
+                }).show();
+            }
+        }
         else{
             recyclerView.setVisibility(View.GONE);
             linearLayout.setVisibility(View.VISIBLE);
@@ -139,48 +195,6 @@ public class MainActivity extends AppCompatActivity implements RecyclerClickInte
                 Intent roleRequestIntent = roleManager.createRequestRoleIntent(RoleManager.ROLE_SMS);
                 startActivityForResult(roleRequestIntent, REQ_CODE_DEFAULT_APP);
             });
-        }
-
-
-       // recyclerModalClassList = new ArrayList<>();
-
-
-
-        //Adding Data to hashmap from the database
-        try {
-            //Getting access to Room database
-            databaseHelper = DatabaseHelper.getDB(this);
-
-            //Getting all the message along with other details
-            List<MessageTableModalClass> messageListFromDatabase = databaseHelper.messageTableModalClassDao().getAllMessages();
-
-            //Initializing the hashmap to store keys as sender and a list of all the messages of that particular sender
-//            messagesBySender = new LinkedHashMap<>();
-
-            // Adding data to hashMap
-            for (MessageTableModalClass messageTableModalClass : messageListFromDatabase) {
-                if (!messagesBySender.containsKey(messageTableModalClass.getMobNumber())) {
-                    // Add the sender and a corresponding list, if it is not already in the hashmap
-                    messagesBySender.put(messageTableModalClass.getMobNumber(), new ArrayList<>());
-                }
-                // Add the message and details(messageTableModalClass) in the hashmap to the corresponding key values
-                Objects.requireNonNull(messagesBySender.get(messageTableModalClass.getMobNumber())).add(messageTableModalClass);
-            }
-
-
-            //Adding Data to recyclerview from the hashmap
-
-            for (Map.Entry<String, List<MessageTableModalClass>> entry : messagesBySender.entrySet()) {
-                MessageTableModalClass latestMessage = entry.getValue().get(entry.getValue().size() - 1);
-                recyclerModalClassList.add(new RecyclerModalClass(latestMessage.getImage(), latestMessage.getMobNumber(),latestMessage.getContactName(),
-                        latestMessage.getMessage(), latestMessage.getDate(), latestMessage.getTime(), latestMessage.getTimeStamp()));
-            }
-            // Sorting the list obtained from hashmap that most recent message appears on top
-            recyclerModalClassList.sort(Comparator.comparingLong(RecyclerModalClass::getTimeStammp));
-            recyclerView.setAdapter(conversationRecyclerViewAdapter);
-            conversationRecyclerViewAdapter.notifyDataSetChanged();
-        }catch (Exception e){
-            e.getStackTrace();
         }
 
     }
@@ -227,11 +241,48 @@ public class MainActivity extends AppCompatActivity implements RecyclerClickInte
         }
     }
 
+
     @Override
     public boolean onContextItemSelected(@NonNull MenuItem item) {
 
+
+        // On long clicking the recyclerView Item
+
         if (item.getItemId() == 121) {
+
+
+
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setMessage("If you delete this, it is permanent! Continue to delete?")
+                    .setCancelable(true)
+                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            String mobNumberToBeDeleted = recyclerModalClassList.get(conversationRecyclerViewAdapter.getPosition()).getMobNumber();
+            // deleting all the messages of above number from the database
+            databaseHelper.messageTableModalClassDao().deleteMessage(mobNumberToBeDeleted);
+            databaseHelper.outgoingMessageTableDao().deleteMessages(mobNumberToBeDeleted);
+            //deleting from the list and notifying to the adapter
+            recyclerModalClassList.remove(conversationRecyclerViewAdapter.getPosition());
+            conversationRecyclerViewAdapter.notifyItemRemoved(conversationRecyclerViewAdapter.getPosition());
+            conversationRecyclerViewAdapter.notifyItemRangeChanged(conversationRecyclerViewAdapter.getPosition(),
+                    recyclerModalClassList.size() - conversationRecyclerViewAdapter.getPosition());
             Toast.makeText(MainActivity.this,"Deleted!",Toast.LENGTH_SHORT).show();
+
+                        }
+                    }).setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+
+                        }
+                    });
+
+            AlertDialog alertDialog = builder.create();
+            alertDialog.setTitle("Confirm");
+            alertDialog.show();
+
         }
 
         return super.onContextItemSelected(item);
@@ -248,6 +299,12 @@ public class MainActivity extends AppCompatActivity implements RecyclerClickInte
         intent.putExtra("list",(Serializable) messagesByTheSenderClicked);
         intent.putExtra("senderMobNumber",senderClicked);
         startActivity(intent);
+    }
 
+    //Checking night mode
+
+    public static boolean isNightMode(Context context) {
+        int nightModeFlags = context.getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
+        return nightModeFlags == Configuration.UI_MODE_NIGHT_YES;
     }
 }

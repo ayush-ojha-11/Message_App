@@ -5,14 +5,31 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/parent_layout"
     tools:context=".activities.MainActivity">
+
+    <androidx.appcompat.widget.Toolbar
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/main_layout_toolbar"
+        android:background="?attr/colorPrimary">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="22sp"
+            android:text="@string/app_name"
+            android:textColor="@color/white"
+            android:fontFamily="serif-monospace"/>
+
+    </androidx.appcompat.widget.Toolbar>
 
 
     <LinearLayout
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-        android:visibility="gone"
+    android:visibility="gone"
     android:layout_centerInParent="true"
     android:id="@+id/linearLayout">
 
@@ -48,6 +65,7 @@
         android:layout_height="wrap_content"
         android:padding="5dp"
         android:visibility="gone"
+        android:layout_below="@id/main_layout_toolbar"
         android:id="@+id/recyclerView"/>
 
 </RelativeLayout>

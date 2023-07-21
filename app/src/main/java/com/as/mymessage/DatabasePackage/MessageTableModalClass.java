@@ -7,6 +7,8 @@ import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 public class MessageTableModalClass implements Serializable {
@@ -39,6 +41,9 @@ public class MessageTableModalClass implements Serializable {
     public MessageTableModalClass(int image, @NonNull String mobNumber, String contactName, String message, String date, String time, long timeStamp) {
 
         this.image = image;
+        if(mobNumber.matches("([0-9])") && mobNumber.charAt(0) != '+'){
+            mobNumber += '+';
+        }
         this.mobNumber = mobNumber;
         this.contactName = contactName;
         this.message = message;

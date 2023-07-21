@@ -11,7 +11,6 @@
         android:layout_height="wrap_content"
         app:cardCornerRadius="7dp"
         app:cardElevation="1dp"
-        android:backgroundTint="@color/white"
         app:cardUseCompatPadding="true">
         
         
@@ -20,13 +19,14 @@
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
             android:id="@+id/llRow"
+            style="@style/SCREEN"
             android:padding="11dp"
             android:orientation="horizontal">
             
             <ImageView
                 android:layout_width="25dp"
                 android:layout_height="25dp"
-                android:id="@+id/imageView"/>
+                android:id="@+id/imageView" />
             
             <LinearLayout
                 android:layout_width="0dp"
@@ -42,8 +42,9 @@
                     android:text="Contact Name"
                     android:maxLines="1"
                     android:textSize="18sp"
-                    android:textColor="@color/black"
-                    android:textStyle="bold"/>
+                    android:textStyle="bold"
+                    style="@style/TEXT"
+                    tools:ignore="HardcodedText" />
                 
                 <TextView
                     android:layout_width="match_parent"
@@ -52,7 +53,8 @@
                     android:text="Ayush Here"
                     android:maxLines="1"
                     android:ellipsize="end"
-                    android:id="@+id/textViewBody"/>
+                    android:id="@+id/textViewBody"
+                    tools:ignore="HardcodedText" />
             </LinearLayout>
 
             <TextView
@@ -60,7 +62,8 @@
                 android:id="@+id/textViewTime"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:text=" 7/23/23\n05:11PM"/>
+                android:text=" 7/23/23\n05:11PM"
+                tools:ignore="HardcodedText" />
 
 
 

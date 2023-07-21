@@ -3,5 +3,19 @@
     <style name="Base.Theme.MyMessage" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your dark theme here. -->
         <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
+        <item name="colorPrimary">#4B3179</item>
+
+        <item name="android:textColorPrimary">@color/white</item>
+
     </style>
+
+    <style name="SCREEN">
+        <item name="android:background">@color/black</item>
+    </style>
+
+    <style name="TEXT">
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+
 </resources>

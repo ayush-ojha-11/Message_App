@@ -2,6 +2,7 @@ package com.as.mymessage.adapters;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.as.mymessage.R;
+import com.as.mymessage.activities.MainActivity;
 import com.as.mymessage.modals.RecyclerModalClass;
 
 import java.util.List;
@@ -38,7 +40,12 @@ public class ConversationRecyclerViewAdapter extends RecyclerView.Adapter<Conver
     @Override
     public void onBindViewHolder(@NonNull ConversationViewHolder holder, int position) {
 
-        holder.imageView.setImageResource(recyclerList.get(position).getImage());
+        if(MainActivity.isNightMode(context)){
+            holder.imageView.setImageResource(R.drawable.baseline_message_white);
+        }
+        else {
+            holder.imageView.setImageResource(R.drawable.baseline_message_24);
+        }
         String sender = null;
         sender = recyclerList.get(position).getContactName() != null ? recyclerList.get(position).getContactName() : recyclerList.get(position).getMobNumber();
         holder.nameView.setText(sender);

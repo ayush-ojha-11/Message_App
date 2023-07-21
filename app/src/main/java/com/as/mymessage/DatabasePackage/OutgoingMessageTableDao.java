@@ -14,4 +14,7 @@ public interface OutgoingMessageTableDao {
 
     @Insert
     void addSentMessage(OutGoingMessageTableModalClass outGoingMessageTableModalClass);
+
+    @Query("DELETE FROM outgoingmessagetablemodalclass WHERE mobNumber =:mobNumber")
+    void deleteMessages(String mobNumber);
 }

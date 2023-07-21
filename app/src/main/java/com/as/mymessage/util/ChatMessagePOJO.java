@@ -3,12 +3,12 @@ package com.as.mymessage.util;
 public class ChatMessagePOJO {
     boolean sent;
     String message;
-    String time;
+    long timeStamp;
 
-    public ChatMessagePOJO(boolean sent, String message, String time) {
+    public ChatMessagePOJO(boolean sent, String message, long timeStamp) {
         this.sent = sent;
         this.message = message;
-        this.time = time;
+        this.timeStamp = timeStamp;
     }
 
     public boolean isSent() {
@@ -27,11 +27,11 @@ public class ChatMessagePOJO {
         this.message = message;
     }
 
-    public String getTime() {
-        return time;
+    public long getTimeStamp() {
+        return timeStamp;
     }
 
-    public void setTime(String time) {
-        this.time = time;
+    public void setTimeStamp(long timeStamp) {
+        this.timeStamp = timeStamp;
     }
 }

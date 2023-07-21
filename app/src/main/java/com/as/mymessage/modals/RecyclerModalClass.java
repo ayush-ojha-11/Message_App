@@ -11,10 +11,9 @@ public class RecyclerModalClass implements Serializable {
     String contactName;
     String mobNumber;
     String message;
-
     String date;
     String time;
-    long timeStammp;
+    long timeStamp;
 
     public String getMobNumber() {
         return mobNumber;
@@ -44,7 +43,7 @@ public class RecyclerModalClass implements Serializable {
         this.message = message;
         this.date = date;
         this.time = time;
-        this.timeStammp = timeStamp;
+        this.timeStamp = timeStamp;
     }
 
     public int getId() {
@@ -95,11 +94,11 @@ public class RecyclerModalClass implements Serializable {
         this.date = date;
     }
 
-    public long getTimeStammp() {
-        return timeStammp;
+    public long getTimeStamp() {
+        return timeStamp;
     }
 
-    public void setTimeStammp(long timeStammp) {
-        this.timeStammp = timeStammp;
+    public void setTimeStamp(long timeStammp) {
+        this.timeStamp = timeStammp;
     }
 }

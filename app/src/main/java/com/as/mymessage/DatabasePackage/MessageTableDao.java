@@ -1,6 +1,7 @@
 package com.as.mymessage.DatabasePackage;
 
 import androidx.room.Dao;
+import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
 import androidx.room.Update;
@@ -21,11 +22,7 @@ public interface MessageTableDao {
     @Update
     void updateMessage(MessageTableModalClass messageTableModalClass);
 
-    @Insert
-    void newAdd(OutGoingMessageTableModalClass outGoingMessageTableModalClass);
-    @Query("SELECT * FROM outgoingmessagetablemodalclass order by id asc")
-    List<OutGoingMessageTableModalClass> getAllSentMessages();
-
-
+    @Query("DELETE FROM messagetablemodalclass WHERE mobNumber = :mobNumber")
+    void deleteMessage(String mobNumber);
 
 }

@@ -158,6 +158,7 @@ public class ChatActivity extends AppCompatActivity {
             Bundle args = intent.getBundleExtra("sms");
             RecyclerModalClass incomingMessage = (RecyclerModalClass) args.getSerializable("object");
             allMessages.add(new ChatMessagePOJO(false, incomingMessage.getMessage(), incomingMessage.getTimeStamp()));
+            chatRecyclerView.post(() -> chatRecyclerView.smoothScrollToPosition(chatAdapter.getItemCount() - 1));
             chatAdapter.notifyDataSetChanged();
         }
     };

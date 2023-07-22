@@ -2,7 +2,9 @@ package com.as.mymessage.adapters;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.as.mymessage.R;
 import com.as.mymessage.activities.MainActivity;
 import com.as.mymessage.modals.RecyclerModalClass;
+import com.as.mymessage.util.ContactCheckerUtil;
 
 import java.util.List;
 
@@ -40,12 +43,33 @@ public class ConversationRecyclerViewAdapter extends RecyclerView.Adapter<Conver
     @Override
     public void onBindViewHolder(@NonNull ConversationViewHolder holder, int position) {
 
-        if(MainActivity.isNightMode(context)){
-            holder.imageView.setImageResource(R.drawable.baseline_message_white);
-        }
-        else {
-            holder.imageView.setImageResource(R.drawable.baseline_message_24);
-        }
+       if(recyclerList.get(position).getContactName()!=null){
+           String number = recyclerList.get(position).getMobNumber();
+           Log.d("number",number);
+
+
+
+               Bitmap contactPhoto = ContactCheckerUtil.getContactPhotoFromPhoneNumber(context,number);
+               if(contactPhoto!=null)
+               holder.imageView.setImageBitmap(contactPhoto);
+               else {
+                   if(MainActivity.isNightMode(context)){
+                       holder.imageView.setImageResource(R.drawable.baseline_person_white);
+                   }
+                   else
+                       holder.imageView.setImageResource(R.drawable.baseline_person_24);
+               }
+       }
+       else {
+
+           if(MainActivity.isNightMode(context)){
+
+               holder.imageView.setImageResource(R.drawable.baseline_message_white);
+           }
+           else
+               holder.imageView.setImageResource(R.drawable.baseline_message_24);
+
+       }
         String sender = null;
         sender = recyclerList.get(position).getContactName() != null ? recyclerList.get(position).getContactName() : recyclerList.get(position).getMobNumber();
         holder.nameView.setText(sender);

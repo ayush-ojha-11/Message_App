@@ -1,8 +1,5 @@
 package com.as.mymessage.activities;
 
-import static com.as.mymessage.util.ContactCheckerUtil.getContactNameFromNumber;
-import static com.as.mymessage.util.ContactCheckerUtil.isNumberInContacts;
-
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.role.RoleManager;
@@ -12,15 +9,12 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Configuration;
-import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Telephony;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -37,12 +31,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.as.mymessage.DatabasePackage.DatabaseHelper;
 import com.as.mymessage.DatabasePackage.MessageTableModalClass;
-import com.as.mymessage.MessageReceiverClasses.SmsReceiver;
 import com.as.mymessage.R;
 import com.as.mymessage.adapters.ConversationRecyclerViewAdapter;
 import com.as.mymessage.adapters.RecyclerClickInterface;
 import com.as.mymessage.modals.RecyclerModalClass;
-import com.as.mymessage.util.TimeStampUtil;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.io.Serializable;
@@ -120,6 +112,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerClickInte
         setContentView(R.layout.activity_main);
 
 
+
         // This linear layout holds the animation and set Default SMS app button and is displayed only
         // when the app is not made as default SMS app
         linearLayout = findViewById(R.id.linearLayout);
@@ -128,7 +121,6 @@ public class MainActivity extends AppCompatActivity implements RecyclerClickInte
         setDefault = findViewById(R.id.setDefaultBtn);
         parentLayout = findViewById(R.id.parent_layout);
         toolbar = findViewById(R.id.main_layout_toolbar);
-
         toolbar.inflateMenu(R.menu.menu);
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext());

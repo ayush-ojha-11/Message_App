@@ -3,6 +3,7 @@ package com.as.mymessage.MessageReceiverClasses;
 import static com.as.mymessage.util.ContactCheckerUtil.getContactNameFromNumber;
 import static com.as.mymessage.util.ContactCheckerUtil.isNumberInContacts;
 
+
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -30,7 +31,7 @@ import com.as.mymessage.util.TimeStampUtil;
 
 public class SmsReceiver extends BroadcastReceiver  {
 
-   private static final int messageImage = R.drawable.baseline_message_24;
+   private static int messageImage = R.drawable.baseline_message_24;
 
     String messageReceived = null;
     String mobNumber = null;

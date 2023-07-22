@@ -9,4 +9,9 @@
 
     </style>
 
+
+    <style name="MyActionBar" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
+        <item name="android:textColor">#FFFFFF</item>
+    </style>
+
 </resources>

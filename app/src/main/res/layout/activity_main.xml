@@ -12,6 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/main_layout_toolbar"
+        app:theme="@style/MyActionBar"
         android:background="?attr/colorPrimary">
 
         <TextView
@@ -54,6 +55,7 @@
          android:layout_width="wrap_content"
          android:layout_height="wrap_content"
          android:text="Set default SMS app"
+         android:textColor="@color/white"
          android:layout_margin="15dp"
          android:layout_gravity="center"
          tools:ignore="HardcodedText" />

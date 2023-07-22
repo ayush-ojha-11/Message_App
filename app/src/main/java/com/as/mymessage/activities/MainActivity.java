@@ -16,6 +16,8 @@ import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Telephony;
+import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
@@ -29,6 +31,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -66,7 +69,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerClickInte
     Button setDefault;
     RelativeLayout parentLayout;
 
-
+    Toolbar toolbar;
 
 
     private final BroadcastReceiver intentReceiver = new BroadcastReceiver() {
@@ -79,8 +82,8 @@ public class MainActivity extends AppCompatActivity implements RecyclerClickInte
             RecyclerModalClass incomingMessage = (RecyclerModalClass) args.getSerializable("object");
             boolean found = false;
             RecyclerModalClass foundItem = null;
-            for(RecyclerModalClass item : recyclerModalClassList){
-                if(item.getMobNumber().equalsIgnoreCase(incomingMessage.getMobNumber())) {
+            for (RecyclerModalClass item : recyclerModalClassList) {
+                if (item.getMobNumber().equalsIgnoreCase(incomingMessage.getMobNumber())) {
                     item.setMessage(incomingMessage.getMessage());
                     item.setDate(incomingMessage.getDate());
                     item.setTime(incomingMessage.getTime());
@@ -95,14 +98,13 @@ public class MainActivity extends AppCompatActivity implements RecyclerClickInte
             }
             // Add the message and details(messageTableModalClass) in the hashmap to the corresponding key values
             Objects.requireNonNull(messagesBySender.get(incomingMessage.getMobNumber())).add(new MessageTableModalClass(incomingMessage.getImage(),
-                    incomingMessage.getMobNumber(),incomingMessage.getContactName(),incomingMessage.getMessage(),incomingMessage.getDate(),incomingMessage.getTime(), incomingMessage.getTimeStamp()));
+                    incomingMessage.getMobNumber(), incomingMessage.getContactName(), incomingMessage.getMessage(), incomingMessage.getDate(), incomingMessage.getTime(), incomingMessage.getTimeStamp()));
 
-            if(found){
+            if (found) {
                 //move item from existing position to last index
                 recyclerModalClassList.remove(foundItem);
                 recyclerModalClassList.add(foundItem);
-            }
-            else{
+            } else {
                 recyclerModalClassList.add(incomingMessage);
             }
             conversationRecyclerViewAdapter.notifyDataSetChanged();
@@ -120,11 +122,14 @@ public class MainActivity extends AppCompatActivity implements RecyclerClickInte
 
         // This linear layout holds the animation and set Default SMS app button and is displayed only
         // when the app is not made as default SMS app
-         linearLayout = findViewById(R.id.linearLayout);
-         recyclerView = findViewById(R.id.recyclerView);
-         textView = findViewById(R.id.textDesc);
-         setDefault = findViewById(R.id.setDefaultBtn);
-         parentLayout = findViewById(R.id.parent_layout);
+        linearLayout = findViewById(R.id.linearLayout);
+        recyclerView = findViewById(R.id.recyclerView);
+        textView = findViewById(R.id.textDesc);
+        setDefault = findViewById(R.id.setDefaultBtn);
+        parentLayout = findViewById(R.id.parent_layout);
+        toolbar = findViewById(R.id.main_layout_toolbar);
+
+        toolbar.inflateMenu(R.menu.menu);
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext());
         linearLayoutManager.setReverseLayout(true);
@@ -136,7 +141,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerClickInte
         //Registering Context Menu on RecyclerView
         registerForContextMenu(recyclerView);
 
-        if(isDefaultSmsApp()){
+        if (isDefaultSmsApp()) {
             recyclerView.setVisibility(View.VISIBLE);
             linearLayout.setVisibility(View.GONE);
             //Adding Data to hashmap from the database
@@ -165,18 +170,18 @@ public class MainActivity extends AppCompatActivity implements RecyclerClickInte
 
                 for (Map.Entry<String, List<MessageTableModalClass>> entry : messagesBySender.entrySet()) {
                     MessageTableModalClass latestMessage = entry.getValue().get(entry.getValue().size() - 1);
-                    recyclerModalClassList.add(new RecyclerModalClass(latestMessage.getImage(), latestMessage.getMobNumber(),latestMessage.getContactName(),
+                    recyclerModalClassList.add(new RecyclerModalClass(latestMessage.getImage(), latestMessage.getMobNumber(), latestMessage.getContactName(),
                             latestMessage.getMessage(), latestMessage.getDate(), latestMessage.getTime(), latestMessage.getTimeStamp()));
                 }
                 // Sorting the list obtained from hashmap that most recent message appears on top
                 recyclerModalClassList.sort(Comparator.comparingLong(RecyclerModalClass::getTimeStamp));
                 recyclerView.setAdapter(conversationRecyclerViewAdapter);
                 conversationRecyclerViewAdapter.notifyDataSetChanged();
-            }catch (Exception e){
+            } catch (Exception e) {
                 e.getStackTrace();
             }
-            if(conversationRecyclerViewAdapter.getItemCount()==0){
-                Snackbar snackbar = Snackbar.make(parentLayout,R.string.snackbar_msg,Snackbar.LENGTH_INDEFINITE);
+            if (conversationRecyclerViewAdapter.getItemCount() == 0) {
+                Snackbar snackbar = Snackbar.make(parentLayout, R.string.snackbar_msg, Snackbar.LENGTH_INDEFINITE);
                 snackbar.setAction("OK", new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -185,8 +190,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerClickInte
                     }
                 }).show();
             }
-        }
-        else{
+        } else {
             recyclerView.setVisibility(View.GONE);
             linearLayout.setVisibility(View.VISIBLE);
             setDefault.setOnClickListener(v -> {
@@ -226,16 +230,15 @@ public class MainActivity extends AppCompatActivity implements RecyclerClickInte
         super.onActivityResult(requestCode, resultCode, data);
 
         // Checking if it is the Prompt intent request code
-        if(requestCode == REQ_CODE_DEFAULT_APP){
+        if (requestCode == REQ_CODE_DEFAULT_APP) {
 
             //True if user clicked OK
-            if(resultCode == RESULT_OK){
-                Toast.makeText(MainActivity.this,"App set as default",Toast.LENGTH_SHORT).show();
+            if (resultCode == RESULT_OK) {
+                Toast.makeText(MainActivity.this, "App set as default", Toast.LENGTH_SHORT).show();
                 linearLayout.setVisibility(View.GONE);
                 recyclerView.setVisibility(View.VISIBLE);
-            }
-            else if(resultCode == RESULT_CANCELED){
-                Toast.makeText(MainActivity.this,"App need to be set as default to use it!",Toast.LENGTH_SHORT).show();
+            } else if (resultCode == RESULT_CANCELED) {
+                Toast.makeText(MainActivity.this, "App need to be set as default to use it!", Toast.LENGTH_SHORT).show();
 
             }
         }
@@ -251,8 +254,6 @@ public class MainActivity extends AppCompatActivity implements RecyclerClickInte
         if (item.getItemId() == 121) {
 
 
-
-
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setMessage("If you delete this, it is permanent! Continue to delete?")
                     .setCancelable(true)
@@ -260,15 +261,15 @@ public class MainActivity extends AppCompatActivity implements RecyclerClickInte
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             String mobNumberToBeDeleted = recyclerModalClassList.get(conversationRecyclerViewAdapter.getPosition()).getMobNumber();
-            // deleting all the messages of above number from the database
-            databaseHelper.messageTableModalClassDao().deleteMessage(mobNumberToBeDeleted);
-            databaseHelper.outgoingMessageTableDao().deleteMessages(mobNumberToBeDeleted);
-            //deleting from the list and notifying to the adapter
-            recyclerModalClassList.remove(conversationRecyclerViewAdapter.getPosition());
-            conversationRecyclerViewAdapter.notifyItemRemoved(conversationRecyclerViewAdapter.getPosition());
-            conversationRecyclerViewAdapter.notifyItemRangeChanged(conversationRecyclerViewAdapter.getPosition(),
-                    recyclerModalClassList.size() - conversationRecyclerViewAdapter.getPosition());
-            Toast.makeText(MainActivity.this,"Deleted!",Toast.LENGTH_SHORT).show();
+                            // deleting all the messages of above number from the database
+                            databaseHelper.messageTableModalClassDao().deleteMessage(mobNumberToBeDeleted);
+                            databaseHelper.outgoingMessageTableDao().deleteMessages(mobNumberToBeDeleted);
+                            //deleting from the list and notifying to the adapter
+                            recyclerModalClassList.remove(conversationRecyclerViewAdapter.getPosition());
+                            conversationRecyclerViewAdapter.notifyItemRemoved(conversationRecyclerViewAdapter.getPosition());
+                            conversationRecyclerViewAdapter.notifyItemRangeChanged(conversationRecyclerViewAdapter.getPosition(),
+                                    recyclerModalClassList.size() - conversationRecyclerViewAdapter.getPosition());
+                            Toast.makeText(MainActivity.this, "Deleted!", Toast.LENGTH_SHORT).show();
 
                         }
                     }).setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -295,9 +296,9 @@ public class MainActivity extends AppCompatActivity implements RecyclerClickInte
         String senderClicked = recyclerModalClassList.get(position).getMobNumber();
         List<MessageTableModalClass> messagesByTheSenderClicked = new ArrayList<>();
         messagesByTheSenderClicked = messagesBySender.get(senderClicked);
-        Intent intent = new Intent(MainActivity.this,ChatActivity.class);
-        intent.putExtra("list",(Serializable) messagesByTheSenderClicked);
-        intent.putExtra("senderMobNumber",senderClicked);
+        Intent intent = new Intent(MainActivity.this, ChatActivity.class);
+        intent.putExtra("list", (Serializable) messagesByTheSenderClicked);
+        intent.putExtra("senderMobNumber", senderClicked);
         startActivity(intent);
     }
 
@@ -306,5 +307,18 @@ public class MainActivity extends AppCompatActivity implements RecyclerClickInte
     public static boolean isNightMode(Context context) {
         int nightModeFlags = context.getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
         return nightModeFlags == Configuration.UI_MODE_NIGHT_YES;
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @SuppressLint("NonConstantResourceId")
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+
+        return super.onOptionsItemSelected(item);
     }
 }

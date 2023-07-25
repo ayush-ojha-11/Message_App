@@ -18,6 +18,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.Toolbar;
@@ -31,6 +32,7 @@ import com.as.mymessage.modals.RecyclerModalClass;
 import com.as.mymessage.util.ChatMessagePOJO;
 import com.as.mymessage.util.ContactCheckerUtil;
 import com.as.mymessage.util.TimeStampUtil;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -50,6 +52,7 @@ public class ChatActivity extends AppCompatActivity {
     List<MessageTableModalClass> receivedMessages;
     List<OutGoingMessageTableModalClass> sentMessages;
     ChatRecyclerViewAdapter chatAdapter;
+    LinearLayout sendLinearLayout;
 
 
 
@@ -64,89 +67,116 @@ public class ChatActivity extends AppCompatActivity {
         intentFilter.addAction("SMS_RECEIVED_ACTION");
 
         sendButton = findViewById(R.id.send_button);
+        sendLinearLayout = findViewById(R.id.send_linear_layout);
         messageEditText = findViewById(R.id.message_edit_text);
         contactNameOnToolbar = findViewById(R.id.toolbar_contact_tv);
         backButtonImageView = findViewById(R.id.back_button_IV);
-        DatabaseHelper databaseHelper = DatabaseHelper.getDB(this);
 
+        DatabaseHelper databaseHelper = DatabaseHelper.getDB(this);
         chatRecyclerView = findViewById(R.id.chat_recycler_view);
         receivedMessages = new ArrayList<>();
 
-        //Getting intent from MainActivity
+        //Getting intent
         Intent i = getIntent();
 
         // Getting the sender that is clicked to send him the message
         receiverMobNumber = i.getStringExtra("senderMobNumber");
 
-        if (ContactCheckerUtil.isNumberInContacts(this, receiverMobNumber)) {
-            receiverContactName = ContactCheckerUtil.getContactNameFromNumber(this, receiverMobNumber);
+        //if it is null it means the intent is from ComposeActivity
+        if (receiverMobNumber == null) {
+            receiverMobNumber =i.getStringExtra("msgReceiverNumber");
+            receiverContactName=i.getStringExtra("msgReceiverName");
         }
-
-        //setting contact name on toolbar is present
-        //else setting the receiver's phone number
-
-        if (receiverContactName != null) {
-            contactNameOnToolbar.setText(receiverContactName);
-        } else
-            contactNameOnToolbar.setText(receiverMobNumber);
-
-        receivedMessages = (List<MessageTableModalClass>) i.getSerializableExtra("list");
-        sentMessages = databaseHelper.outgoingMessageTableDao().getAllSentMessages(receiverMobNumber);
-        allMessages = new ArrayList<>();
-
-        //Adding all received and sent messages in allMessages list
-        for (MessageTableModalClass message : receivedMessages) {
-            allMessages.add(new ChatMessagePOJO(false, message.getMessage(), message.getTimeStamp()));
-        }
-
-        for (OutGoingMessageTableModalClass message : sentMessages) {
-            allMessages.add(new ChatMessagePOJO(true, message.getMessage(), message.getTimeStamp()));
-        }
-
-        //Sorting all the messages so that the recyclerview is displayed exactly like
-        //a timed chat
-        allMessages.sort(Comparator.comparingLong(ChatMessagePOJO::getTimeStamp));
-
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
-        chatRecyclerView.setLayoutManager(linearLayoutManager);
-        chatAdapter = new ChatRecyclerViewAdapter(getApplicationContext(), allMessages);
-        chatRecyclerView.setAdapter(chatAdapter);
-
-        // Scrolling RecyclerView to the last sent or received message
-        chatRecyclerView.post(() -> chatRecyclerView.smoothScrollToPosition(chatAdapter.getItemCount() - 1));
-
-        chatAdapter.notifyDataSetChanged();
-
-
-        sendButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                String message = messageEditText.getText().toString();
-                messageEditText.getText().clear();
-                SmsManager smsManager = SmsManager.getDefault();
-                //Intent thisIntent = new Intent(getApplicationContext(), ChatActivity.class);
-                //PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 1, thisIntent, PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_IMMUTABLE);
-                smsManager.sendTextMessage(receiverMobNumber, null, message, null, null);
-                Toast.makeText(ChatActivity.this, "Message sent!", Toast.LENGTH_SHORT).show();
-
-                OutGoingMessageTableModalClass sentMessage = new OutGoingMessageTableModalClass(
-                        R.drawable.baseline_message_24, receiverMobNumber, receiverContactName, message, TimeStampUtil.getDate()
-                        , TimeStampUtil.getTime(), TimeStampUtil.getTheTimeStamp());
-
-                allMessages.add(new ChatMessagePOJO(true, sentMessage.getMessage(), sentMessage.getTimeStamp()));
-                // Scrolling RecyclerView to the last sent or received message
-                chatRecyclerView.post(() -> chatRecyclerView.smoothScrollToPosition(chatAdapter.getItemCount() - 1));
-
-                chatAdapter.notifyDataSetChanged();
-
-                databaseHelper.outgoingMessageTableDao().addSentMessage(sentMessage);
+        else {
+            if (ContactCheckerUtil.isNumberInContacts(this, receiverMobNumber)) {
+                receiverContactName = ContactCheckerUtil.getContactNameFromNumber(this, receiverMobNumber);
             }
-        });
+        }
 
-        //Setting up backButtonImageView listener
-        backButtonImageView.setOnClickListener(v -> finish());
+            //setting contact name on toolbar if present
+            //else setting the receiver's phone number
 
+            if (receiverContactName != null) {
+                contactNameOnToolbar.setText(receiverContactName);
+            }
+            else {
+                contactNameOnToolbar.setText(receiverMobNumber);
+                if (!receiverMobNumber.matches("[0-9]")) {
+                    sendLinearLayout.setVisibility(View.GONE);
+                    Snackbar snackbar = Snackbar.make(sendLinearLayout, "The sender does not support replies!", Snackbar.LENGTH_INDEFINITE);
+                    snackbar.setAction("OK", new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            snackbar.dismiss();
+                        }
+                    }).show();
+                }
+            }
+
+            receivedMessages = (List<MessageTableModalClass>) i.getSerializableExtra("list");
+            sentMessages = databaseHelper.outgoingMessageTableDao().getAllSentMessages(receiverMobNumber);
+            allMessages = new ArrayList<>();
+
+            //Adding all received and sent messages in allMessages list
+            if(receivedMessages!=null) {
+
+                for (MessageTableModalClass message : receivedMessages) {
+                    allMessages.add(new ChatMessagePOJO(false, message.getMessage(), message.getTimeStamp()));
+                }
+            }
+            if(sentMessages!=null) {
+
+                for (OutGoingMessageTableModalClass message : sentMessages) {
+                    allMessages.add(new ChatMessagePOJO(true, message.getMessage(), message.getTimeStamp()));
+                }
+            }
+
+            //Sorting all the messages so that the recyclerview is displayed exactly like
+            //a timed chat
+            allMessages.sort(Comparator.comparingLong(ChatMessagePOJO::getTimeStamp));
+
+            LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+            chatRecyclerView.setLayoutManager(linearLayoutManager);
+            chatAdapter = new ChatRecyclerViewAdapter(getApplicationContext(), allMessages);
+            chatRecyclerView.setAdapter(chatAdapter);
+
+            // Scrolling RecyclerView to the last received message
+            if(receivedMessages!=null) {
+                chatRecyclerView.post(() -> chatRecyclerView.smoothScrollToPosition(chatAdapter.getItemCount() - 1));
+            }
+
+            chatAdapter.notifyDataSetChanged();
+
+
+            sendButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    String message = messageEditText.getText().toString();
+                    messageEditText.getText().clear();
+                    if (!message.isEmpty()) {
+                        SmsManager smsManager = SmsManager.getDefault();
+                        smsManager.sendTextMessage(receiverMobNumber, null, message, null, null);
+                        Toast.makeText(ChatActivity.this, "Message sent!", Toast.LENGTH_SHORT).show();
+
+                        OutGoingMessageTableModalClass sentMessage = new OutGoingMessageTableModalClass(
+                                R.drawable.baseline_message_24, receiverMobNumber, receiverContactName, message, TimeStampUtil.getDate()
+                                , TimeStampUtil.getTime(), TimeStampUtil.getTheTimeStamp());
+
+                        allMessages.add(new ChatMessagePOJO(true, sentMessage.getMessage(), sentMessage.getTimeStamp()));
+                        // Scrolling RecyclerView to the last sent or received message
+                        chatRecyclerView.post(() -> chatRecyclerView.smoothScrollToPosition(chatAdapter.getItemCount() - 1));
+                        chatAdapter.notifyDataSetChanged();
+                        databaseHelper.outgoingMessageTableDao().addSentMessage(sentMessage);
+                    } else {
+                        messageEditText.setError("Type a message!");
+                    }
+
+                }
+            });
+
+            //Setting up backButtonImageView listener
+            backButtonImageView.setOnClickListener(v -> finish());
     }
 
     private final BroadcastReceiver intentReceiver = new BroadcastReceiver() {

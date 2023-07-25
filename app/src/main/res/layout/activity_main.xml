@@ -6,6 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/parent_layout"
+    android:clickable="false"
     tools:context=".activities.MainActivity">
 
     <androidx.appcompat.widget.Toolbar
@@ -21,7 +22,7 @@
             android:textSize="22sp"
             android:text="@string/app_name"
             android:textColor="@color/white"
-            android:fontFamily="serif-monospace"/>
+            android:fontFamily="monospace"/>
 
     </androidx.appcompat.widget.Toolbar>
 

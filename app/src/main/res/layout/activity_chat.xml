@@ -45,9 +45,9 @@
             android:id="@+id/send_button"
             android:layout_width="0dp"
             android:layout_weight=".1"
-            android:layout_height="55dp"
+            android:layout_height="45dp"
             android:layout_marginStart="5dp"
-            android:layout_gravity="center"
+            android:layout_gravity="top"
             android:src="@drawable/sendmessagebtn"/>
     </LinearLayout>
 

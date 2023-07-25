@@ -5,6 +5,12 @@
 
 
     <item
+        android:id="@+id/menu_compose"
+        android:title="New Conversation"
+        android:icon="@drawable/baseline_message_white"
+        app:showAsAction="always"/>
+
+    <item
         android:id="@+id/menu_about"
         android:title="About"
         app:showAsAction="never"/>

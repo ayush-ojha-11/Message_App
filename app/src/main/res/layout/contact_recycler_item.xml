@@ -14,8 +14,8 @@
         app:cardElevation="1dp"
         android:backgroundTint="@color/backgroundColor"
         app:cardUseCompatPadding="true">
-        
-        
+
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -23,21 +23,21 @@
             android:id="@+id/llRow"
             android:padding="10dp"
             android:orientation="horizontal">
-            
+
             <de.hdodenhof.circleimageview.CircleImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/imageView" />
-            
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:id="@+id/contact_photo_circular_image_view" />
+
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:layout_marginStart="11dp"
                 android:orientation="vertical">
-                
+
                 <TextView
-                    android:id="@+id/textViewName"
+                    android:id="@+id/contact_name_text_view"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Contact Name"
@@ -46,7 +46,7 @@
                     android:textStyle="bold"
                     android:textColor="@color/textColor"
                     tools:ignore="HardcodedText" />
-                
+
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -54,22 +54,13 @@
                     android:text="Ayush Here"
                     android:maxLines="1"
                     android:ellipsize="end"
-                    android:id="@+id/textViewBody"
+                    android:id="@+id/mobNumber_text_view"
                     tools:ignore="HardcodedText" />
             </LinearLayout>
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:id="@+id/textViewTime"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:text=" 7/23/23\n05:11PM"
-                tools:ignore="HardcodedText" />
-
-
 
         </LinearLayout>
-        
+
     </androidx.cardview.widget.CardView>
 
 

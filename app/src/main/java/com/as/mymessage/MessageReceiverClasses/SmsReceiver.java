@@ -87,6 +87,18 @@ public class SmsReceiver extends BroadcastReceiver  {
            mobNumber = message.getDisplayOriginatingAddress();
            time = message.getTimestampMillis();
 
+           //Modifying the number
+
+            if(mobNumber.charAt(0)=='+'){
+                mobNumber = mobNumber.substring(mobNumber.length()-10);
+                mobNumber = "0"+mobNumber;
+            }
+            else {
+                if(mobNumber.matches("^(\\+\\d{1,2}\\s)?\\(?\\d{3}\\)?[\\s.-]\\d{3}[\\s.-]\\d{4}$")) {
+                    mobNumber = "0"+mobNumber;
+                }
+            }
+
             if(isNumberInContacts(context,mobNumber)){
                 contactName = getContactNameFromNumber(context,mobNumber);
             }

@@ -80,17 +80,22 @@ public class ChatActivity extends AppCompatActivity {
         Intent i = getIntent();
 
         // Getting the sender that is clicked to send him the message
+        //senderMobNumber is passed from MainActivity
         receiverMobNumber = i.getStringExtra("senderMobNumber");
 
         //if it is null it means the intent is from ComposeActivity
         if (receiverMobNumber == null) {
+            //intent is from ComposeActivity
             receiverMobNumber =i.getStringExtra("msgReceiverNumber");
             receiverContactName=i.getStringExtra("msgReceiverName");
+            receivedMessages = databaseHelper.messageTableModalClassDao().getAllMessagesOfASender(receiverMobNumber);
         }
         else {
+            //Intent is from MainActivity
             if (ContactCheckerUtil.isNumberInContacts(this, receiverMobNumber)) {
                 receiverContactName = ContactCheckerUtil.getContactNameFromNumber(this, receiverMobNumber);
             }
+            receivedMessages = (List<MessageTableModalClass>) i.getSerializableExtra("list");
         }
 
             //setting contact name on toolbar if present
@@ -101,7 +106,7 @@ public class ChatActivity extends AppCompatActivity {
             }
             else {
                 contactNameOnToolbar.setText(receiverMobNumber);
-                if (!receiverMobNumber.matches("[0-9]")) {
+                if (!receiverMobNumber.matches("^(\\+\\d{1,2}\\s)?\\(?\\d{3}\\)?[\\s.-]\\d{3}[\\s.-]\\d{4}$\n")) {
                     sendLinearLayout.setVisibility(View.GONE);
                     Snackbar snackbar = Snackbar.make(sendLinearLayout, "The sender does not support replies!", Snackbar.LENGTH_INDEFINITE);
                     snackbar.setAction("OK", new View.OnClickListener() {
@@ -113,7 +118,6 @@ public class ChatActivity extends AppCompatActivity {
                 }
             }
 
-            receivedMessages = (List<MessageTableModalClass>) i.getSerializableExtra("list");
             sentMessages = databaseHelper.outgoingMessageTableDao().getAllSentMessages(receiverMobNumber);
             allMessages = new ArrayList<>();
 
@@ -141,9 +145,9 @@ public class ChatActivity extends AppCompatActivity {
             chatRecyclerView.setAdapter(chatAdapter);
 
             // Scrolling RecyclerView to the last received message
-            if(receivedMessages!=null) {
-                chatRecyclerView.post(() -> chatRecyclerView.smoothScrollToPosition(chatAdapter.getItemCount() - 1));
-            }
+//            if(receivedMessages!=null) {
+//                chatRecyclerView.post(() -> chatRecyclerView.smoothScrollToPosition(chatAdapter.getItemCount() - 1));
+//            }
 
             chatAdapter.notifyDataSetChanged();
 
@@ -203,5 +207,11 @@ public class ChatActivity extends AppCompatActivity {
     protected void onPause() {
         unregisterReceiver(intentReceiver);
         super.onPause();
+    }
+
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
     }
 }

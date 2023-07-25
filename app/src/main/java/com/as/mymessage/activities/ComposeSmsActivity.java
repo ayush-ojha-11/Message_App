@@ -108,6 +108,15 @@ public class ComposeSmsActivity extends AppCompatActivity implements RecyclerCli
 
             //Replace all spaces in number with empty string
             number = number.replaceAll("\\s","");
+            if(number.charAt(0)=='+'){
+                number = number.substring(number.length()-10);
+                number = "0"+number;
+            }
+            else {
+                if(number.matches("^(\\+\\d{1,2}\\s)?\\(?\\d{3}\\)?[\\s.-]\\d{3}[\\s.-]\\d{4}$")) {
+                    number = "0"+number;
+                }
+            }
 
             @SuppressLint("Range")
             String photoUri = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.PHOTO_URI));

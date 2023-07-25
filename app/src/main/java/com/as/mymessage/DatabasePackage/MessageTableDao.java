@@ -19,10 +19,10 @@ public interface MessageTableDao {
     void addMessage(MessageTableModalClass messageTableModalClass);
 
 
-    @Update
-    void updateMessage(MessageTableModalClass messageTableModalClass);
-
     @Query("DELETE FROM messagetablemodalclass WHERE mobNumber = :mobNumber")
     void deleteMessage(String mobNumber);
+
+    @Query("SELECT * FROM messagetablemodalclass WHERE mobNumber= :mobNumber")
+    List<MessageTableModalClass> getAllMessagesOfASender(String mobNumber);
 
 }

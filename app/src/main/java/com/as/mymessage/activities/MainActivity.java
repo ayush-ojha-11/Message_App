@@ -65,6 +65,8 @@ public class MainActivity extends AppCompatActivity implements RecyclerClickInte
     Toolbar toolbar;
     Menu optionsMenu;
 
+    private List<MessageTableModalClass> messageListFromDatabase;
+
 
     private final BroadcastReceiver intentReceiver = new BroadcastReceiver() {
         @SuppressLint("NotifyDataSetChanged")
@@ -149,7 +151,8 @@ public class MainActivity extends AppCompatActivity implements RecyclerClickInte
             linearLayout.setVisibility(View.GONE);
 
             //Adding Data to hashmap from the database
-            mainAppFunctioning();
+            messageListFromDatabase = new ArrayList<>();
+//            mainAppFunctioning();
         } else {
             recyclerView.setVisibility(View.GONE);
             linearLayout.setVisibility(View.VISIBLE);
@@ -169,7 +172,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerClickInte
             databaseHelper = DatabaseHelper.getDB(this);
 
             //Getting all the message along with other details
-            List<MessageTableModalClass> messageListFromDatabase = databaseHelper.messageTableModalClassDao().getAllMessages();
+            messageListFromDatabase = databaseHelper.messageTableModalClassDao().getAllMessages();
 
             //Initializing the hashmap to store keys as sender and a list of all the messages of that particular sender
 
@@ -180,7 +183,10 @@ public class MainActivity extends AppCompatActivity implements RecyclerClickInte
                     messagesBySender.put(messageTableModalClass.getMobNumber(), new ArrayList<>());
                 }
                 // Add the message and details(messageTableModalClass) in the hashmap to the corresponding key values
-                Objects.requireNonNull(messagesBySender.get(messageTableModalClass.getMobNumber())).add(messageTableModalClass);
+                List<MessageTableModalClass> messages =  messagesBySender.get(messageTableModalClass.getMobNumber());
+                assert messages != null;
+                if(!messages.contains(messageTableModalClass))
+                    Objects.requireNonNull(messages).add(messageTableModalClass);
             }
 
 
@@ -188,8 +194,10 @@ public class MainActivity extends AppCompatActivity implements RecyclerClickInte
 
             for (Map.Entry<String, List<MessageTableModalClass>> entry : messagesBySender.entrySet()) {
                 MessageTableModalClass latestMessage = entry.getValue().get(entry.getValue().size() - 1);
-                recyclerModalClassList.add(new RecyclerModalClass(latestMessage.getImage(), latestMessage.getMobNumber(), latestMessage.getContactName(),
-                        latestMessage.getMessage(), latestMessage.getDate(), latestMessage.getTime(), latestMessage.getTimeStamp()));
+                RecyclerModalClass obj = new RecyclerModalClass(latestMessage.getId(),latestMessage.getImage(), latestMessage.getMobNumber(), latestMessage.getContactName(),
+                        latestMessage.getMessage(), latestMessage.getDate(), latestMessage.getTime(), latestMessage.getTimeStamp());
+                if(!recyclerModalClassList.contains(obj))
+                    recyclerModalClassList.add(obj);
             }
             // Sorting the list obtained from hashmap that most recent message appears on top
             recyclerModalClassList.sort(Comparator.comparingLong(RecyclerModalClass::getTimeStamp));
@@ -213,6 +221,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerClickInte
     @Override
     protected void onResume() {
         registerReceiver(intentReceiver, intentFilter);
+        mainAppFunctioning();
         super.onResume();
     }
 

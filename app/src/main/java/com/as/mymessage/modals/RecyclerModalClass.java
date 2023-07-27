@@ -1,7 +1,10 @@
 package com.as.mymessage.modals;
 
 
+import androidx.annotation.Nullable;
 import androidx.room.Ignore;
+
+import com.as.mymessage.DatabasePackage.MessageTableModalClass;
 
 import java.io.Serializable;
 
@@ -35,8 +38,8 @@ public class RecyclerModalClass implements Serializable {
 
     // For main activity
     @Ignore
-    public RecyclerModalClass(int image, String mobNumber,String contactName, String message,String date, String time, long timeStamp) {
-
+    public RecyclerModalClass(int id, int image, String mobNumber,String contactName, String message,String date, String time, long timeStamp) {
+        this.id = id;
         this.image = image;
         this.contactName = contactName;
         this.mobNumber = mobNumber;
@@ -100,5 +103,28 @@ public class RecyclerModalClass implements Serializable {
 
     public void setTimeStamp(long timeStammp) {
         this.timeStamp = timeStammp;
+    }
+
+    @Override
+    public int hashCode() {
+        return this.id;
+    }
+
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        //return true if they are same objects
+        if(this == obj)
+            return true;
+
+        // if object is null or object is of another class
+        if(obj == null || obj.getClass()!= this.getClass())
+            return false;
+
+        // type casting of the argument.
+        RecyclerModalClass recyclerModalClass = (RecyclerModalClass) obj;
+
+        // comparing the state of argument with
+        // the state of 'this' Object.
+        return (recyclerModalClass.id == this.id);
     }
 }

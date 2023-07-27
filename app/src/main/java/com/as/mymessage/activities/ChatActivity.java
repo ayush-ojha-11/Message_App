@@ -55,7 +55,6 @@ public class ChatActivity extends AppCompatActivity {
     LinearLayout sendLinearLayout;
 
 
-
     @RequiresApi(api = Build.VERSION_CODES.Q)
     @SuppressLint("NotifyDataSetChanged")
     @Override
@@ -75,6 +74,7 @@ public class ChatActivity extends AppCompatActivity {
         DatabaseHelper databaseHelper = DatabaseHelper.getDB(this);
         chatRecyclerView = findViewById(R.id.chat_recycler_view);
         receivedMessages = new ArrayList<>();
+        sentMessages = new ArrayList<>();
 
         //Getting intent
         Intent i = getIntent();
@@ -86,11 +86,10 @@ public class ChatActivity extends AppCompatActivity {
         //if it is null it means the intent is from ComposeActivity
         if (receiverMobNumber == null) {
             //intent is from ComposeActivity
-            receiverMobNumber =i.getStringExtra("msgReceiverNumber");
-            receiverContactName=i.getStringExtra("msgReceiverName");
+            receiverMobNumber = i.getStringExtra("msgReceiverNumber");
+            receiverContactName = i.getStringExtra("msgReceiverName");
             receivedMessages = databaseHelper.messageTableModalClassDao().getAllMessagesOfASender(receiverMobNumber);
-        }
-        else {
+        } else {
             //Intent is from MainActivity
             if (ContactCheckerUtil.isNumberInContacts(this, receiverMobNumber)) {
                 receiverContactName = ContactCheckerUtil.getContactNameFromNumber(this, receiverMobNumber);
@@ -98,89 +97,83 @@ public class ChatActivity extends AppCompatActivity {
             receivedMessages = (List<MessageTableModalClass>) i.getSerializableExtra("list");
         }
 
-            //setting contact name on toolbar if present
-            //else setting the receiver's phone number
+        //setting contact name on toolbar if present
+        //else setting the receiver's phone number
 
-            if (receiverContactName != null) {
-                contactNameOnToolbar.setText(receiverContactName);
-            }
-            else {
-                contactNameOnToolbar.setText(receiverMobNumber);
-                if (!receiverMobNumber.matches("^(\\+\\d{1,2}\\s)?\\(?\\d{3}\\)?[\\s.-]\\d{3}[\\s.-]\\d{4}$\n")) {
-                    sendLinearLayout.setVisibility(View.GONE);
-                    Snackbar snackbar = Snackbar.make(sendLinearLayout, "The sender does not support replies!", Snackbar.LENGTH_INDEFINITE);
-                    snackbar.setAction("OK", new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            snackbar.dismiss();
-                        }
-                    }).show();
-                }
-            }
-
-            sentMessages = databaseHelper.outgoingMessageTableDao().getAllSentMessages(receiverMobNumber);
-            allMessages = new ArrayList<>();
-
-            //Adding all received and sent messages in allMessages list
-            if(receivedMessages!=null) {
-
-                for (MessageTableModalClass message : receivedMessages) {
-                    allMessages.add(new ChatMessagePOJO(false, message.getMessage(), message.getTimeStamp()));
-                }
-            }
-            if(sentMessages!=null) {
-
-                for (OutGoingMessageTableModalClass message : sentMessages) {
-                    allMessages.add(new ChatMessagePOJO(true, message.getMessage(), message.getTimeStamp()));
-                }
-            }
-
-            //Sorting all the messages so that the recyclerview is displayed exactly like
-            //a timed chat
-            allMessages.sort(Comparator.comparingLong(ChatMessagePOJO::getTimeStamp));
-
-            LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
-            chatRecyclerView.setLayoutManager(linearLayoutManager);
-            chatAdapter = new ChatRecyclerViewAdapter(getApplicationContext(), allMessages);
-            chatRecyclerView.setAdapter(chatAdapter);
-
-            // Scrolling RecyclerView to the last received message
-//            if(receivedMessages!=null) {
-//                chatRecyclerView.post(() -> chatRecyclerView.smoothScrollToPosition(chatAdapter.getItemCount() - 1));
-//            }
-
-            chatAdapter.notifyDataSetChanged();
-
-
-            sendButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-
-                    String message = messageEditText.getText().toString();
-                    messageEditText.getText().clear();
-                    if (!message.isEmpty()) {
-                        SmsManager smsManager = SmsManager.getDefault();
-                        smsManager.sendTextMessage(receiverMobNumber, null, message, null, null);
-                        Toast.makeText(ChatActivity.this, "Message sent!", Toast.LENGTH_SHORT).show();
-
-                        OutGoingMessageTableModalClass sentMessage = new OutGoingMessageTableModalClass(
-                                R.drawable.baseline_message_24, receiverMobNumber, receiverContactName, message, TimeStampUtil.getDate()
-                                , TimeStampUtil.getTime(), TimeStampUtil.getTheTimeStamp());
-
-                        allMessages.add(new ChatMessagePOJO(true, sentMessage.getMessage(), sentMessage.getTimeStamp()));
-                        // Scrolling RecyclerView to the last sent or received message
-                        chatRecyclerView.post(() -> chatRecyclerView.smoothScrollToPosition(chatAdapter.getItemCount() - 1));
-                        chatAdapter.notifyDataSetChanged();
-                        databaseHelper.outgoingMessageTableDao().addSentMessage(sentMessage);
-                    } else {
-                        messageEditText.setError("Type a message!");
+        if (receiverContactName != null) {
+            contactNameOnToolbar.setText(receiverContactName);
+        } else {
+            contactNameOnToolbar.setText(receiverMobNumber);
+            if (!receiverMobNumber.matches("^(\\+\\d{1,2}\\s)?\\(?\\d{3}\\)?[\\s.-]\\d{3}[\\s.-]\\d{4}$\n")) {
+                sendLinearLayout.setVisibility(View.GONE);
+                Snackbar snackbar = Snackbar.make(sendLinearLayout, "The sender does not support replies!", Snackbar.LENGTH_INDEFINITE);
+                snackbar.setAction("OK", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        snackbar.dismiss();
                     }
+                }).show();
+            }
+        }
 
+        sentMessages = databaseHelper.outgoingMessageTableDao().getAllSentMessages(receiverMobNumber);
+        allMessages = new ArrayList<>();
+
+        //Adding all received and sent messages in allMessages list
+        if (!receivedMessages.isEmpty()) {
+
+            for (MessageTableModalClass message : receivedMessages) {
+                allMessages.add(new ChatMessagePOJO(false, message.getMessage(), message.getTimeStamp()));
+            }
+        }
+        if (!sentMessages.isEmpty()) {
+
+            for (OutGoingMessageTableModalClass message : sentMessages) {
+                allMessages.add(new ChatMessagePOJO(true, message.getMessage(), message.getTimeStamp()));
+            }
+        }
+
+        //Sorting all the messages so that the recyclerview is displayed exactly like
+        //a timed chat
+        allMessages.sort(Comparator.comparingLong(ChatMessagePOJO::getTimeStamp));
+
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        chatRecyclerView.setLayoutManager(linearLayoutManager);
+        chatAdapter = new ChatRecyclerViewAdapter(getApplicationContext(), allMessages);
+        chatRecyclerView.setAdapter(chatAdapter);
+
+        chatAdapter.notifyDataSetChanged();
+
+
+        sendButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                String message = messageEditText.getText().toString();
+                messageEditText.getText().clear();
+                if (!message.isEmpty()) {
+                    SmsManager smsManager = SmsManager.getDefault();
+                    smsManager.sendTextMessage(receiverMobNumber, null, message, null, null);
+                    Toast.makeText(ChatActivity.this, "Message sent!", Toast.LENGTH_SHORT).show();
+
+                    OutGoingMessageTableModalClass sentMessage = new OutGoingMessageTableModalClass(
+                            R.drawable.baseline_message_24, receiverMobNumber, receiverContactName, message, TimeStampUtil.getDate()
+                            , TimeStampUtil.getTime(), TimeStampUtil.getTheTimeStamp());
+
+                    allMessages.add(new ChatMessagePOJO(true, sentMessage.getMessage(), sentMessage.getTimeStamp()));
+                    // Scrolling RecyclerView to the last sent or received message
+                    chatRecyclerView.post(() -> chatRecyclerView.smoothScrollToPosition(chatAdapter.getItemCount() - 1));
+                    chatAdapter.notifyDataSetChanged();
+                    databaseHelper.outgoingMessageTableDao().addSentMessage(sentMessage);
+                } else {
+                    messageEditText.setError("Type a message!");
                 }
-            });
 
-            //Setting up backButtonImageView listener
-            backButtonImageView.setOnClickListener(v -> finish());
+            }
+        });
+
+        //Setting up backButtonImageView listener
+        backButtonImageView.setOnClickListener(v -> finish());
     }
 
     private final BroadcastReceiver intentReceiver = new BroadcastReceiver() {

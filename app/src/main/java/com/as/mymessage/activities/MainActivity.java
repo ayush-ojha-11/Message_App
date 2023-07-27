@@ -215,6 +215,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerClickInte
         }
     }
 
+    @SuppressLint("UnspecifiedRegisterReceiverFlag")
     @Override
     protected void onResume() {
         registerReceiver(intentReceiver, intentFilter);

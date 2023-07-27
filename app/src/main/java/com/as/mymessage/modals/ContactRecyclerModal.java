@@ -3,22 +3,32 @@ package com.as.mymessage.modals;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ContactRecyclerModal {
-    String contactPhoto;
-    String contactName;
-    String mobNumber;
+    private String id;
+    private String contactPhotoUri;
+    private String contactName;
+    private String mobNumber;
 
-    public ContactRecyclerModal(String contactPhoto, String contactName, String mobNumber) {
-        this.contactPhoto = contactPhoto;
+    public ContactRecyclerModal(String id, String contactPhotoUri, String contactName, String mobNumber) {
+        this.id = id;
+        this.contactPhotoUri = contactPhotoUri;
         this.contactName = contactName;
         this.mobNumber = mobNumber;
     }
 
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
     public String getContactPhoto() {
-        return contactPhoto;
+        return contactPhotoUri;
     }
 
     public void setContactPhoto(String contactPhoto) {
-        this.contactPhoto = contactPhoto;
+        this.contactPhotoUri = contactPhoto;
     }
 
     public String getContactName() {

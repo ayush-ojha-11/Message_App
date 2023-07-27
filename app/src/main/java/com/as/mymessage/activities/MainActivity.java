@@ -115,8 +115,6 @@ public class MainActivity extends AppCompatActivity implements RecyclerClickInte
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
-
         // This linear layout holds the animation and set Default SMS app button and is displayed only
         // when the app is not made as default SMS app
         linearLayout = findViewById(R.id.linearLayout);
@@ -149,11 +147,10 @@ public class MainActivity extends AppCompatActivity implements RecyclerClickInte
         if (isDefaultSmsApp()) {
             recyclerView.setVisibility(View.VISIBLE);
             linearLayout.setVisibility(View.GONE);
-
-            //Adding Data to hashmap from the database
             messageListFromDatabase = new ArrayList<>();
-//            mainAppFunctioning();
-        } else {
+
+        }
+        else {
             recyclerView.setVisibility(View.GONE);
             linearLayout.setVisibility(View.VISIBLE);
             setDefault.setOnClickListener(v -> {

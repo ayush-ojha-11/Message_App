@@ -76,44 +76,51 @@ public class SmsReceiver extends BroadcastReceiver  {
 
         Bundle bundle =intent.getExtras();
         //pdus (Protocol Data Units)
-        Object[] pdus = (Object[]) bundle.get("pdus");
-        SmsMessage[] messages = new SmsMessage[pdus.length];
+        if(bundle!=null){
+            Object[] pdus = (Object[]) bundle.get("pdus");
+            if(pdus != null){
+                for(Object pdu : pdus){
+                    SmsMessage smsMessage = SmsMessage.createFromPdu((byte[]) pdu);
 
-        for (int i = 0; i < pdus.length; i++) {
-            messages[i] = SmsMessage.createFromPdu((byte[]) pdus[i]);
-        }
-        for (SmsMessage message : messages) {
-           messageReceived = message.getMessageBody();
-           mobNumber = message.getDisplayOriginatingAddress();
-           time = message.getTimestampMillis();
+                    messageReceived = smsMessage.getMessageBody();
+                    mobNumber = smsMessage.getDisplayOriginatingAddress();
+                    time = smsMessage.getTimestampMillis();
 
-           //Modifying the number
+                    //Modifying the number
 
-            if(mobNumber.charAt(0)=='+'){
-                mobNumber = mobNumber.substring(mobNumber.length()-10);
-                mobNumber = "0"+mobNumber;
-            }
-            else {
-                if(mobNumber.matches("^(\\+\\d{1,2}\\s)?\\(?\\d{3}\\)?[\\s.-]\\d{3}[\\s.-]\\d{4}$")) {
-                    mobNumber = "0"+mobNumber;
+                    if(mobNumber.charAt(0)=='+'){
+                        mobNumber = mobNumber.substring(mobNumber.length()-10);
+                        mobNumber = "0"+mobNumber;
+                    }
+                    else {
+                        if(mobNumber.matches("^(\\+\\d{1,2}\\s)?\\(?\\d{3}\\)?[\\s.-]\\d{3}[\\s.-]\\d{4}$")) {
+                            mobNumber = "0"+mobNumber;
+                        }
+                    }
+
+                    if(isNumberInContacts(context,mobNumber)){
+                        contactName = getContactNameFromNumber(context,mobNumber);
+                    }
+                    Log.d("MsgDetails","MobNo:"+mobNumber+" , Msg: "+messageReceived+" , Time: "+time);
+
+                    //Sending intent in the form of Serializable
+                    Intent broadcastIntent = new Intent();
+                    Bundle args = new Bundle();
+                    RecyclerModalClass recyclerModalClass = new RecyclerModalClass(messageImage,mobNumber,contactName,messageReceived,TimeStampUtil.convertToDate(time), TimeStampUtil.convertToTime(time));
+                    args.putSerializable("object",recyclerModalClass);
+                    broadcastIntent.setAction("SMS_RECEIVED_ACTION");
+                    broadcastIntent.putExtra("sms",args);
+                    context.sendBroadcast(broadcastIntent);
                 }
             }
-
-            if(isNumberInContacts(context,mobNumber)){
-                contactName = getContactNameFromNumber(context,mobNumber);
-            }
-            Log.d("MsgDetails","MobNo:"+mobNumber+" , Msg: "+messageReceived+" , Time: "+time);
-
-            //Sending intent in the form of Serializable
-            Intent broadcastIntent = new Intent();
-            Bundle args = new Bundle();
-            RecyclerModalClass recyclerModalClass = new RecyclerModalClass(messageImage,mobNumber,contactName,messageReceived,TimeStampUtil.convertToDate(time), TimeStampUtil.convertToTime(time));
-            args.putSerializable("object",recyclerModalClass);
-            broadcastIntent.setAction("SMS_RECEIVED_ACTION");
-            broadcastIntent.putExtra("sms",args);
-            context.sendBroadcast(broadcastIntent);
         }
     }
 
-
 }
+
+
+
+
+
+
+

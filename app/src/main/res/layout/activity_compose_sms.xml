@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -8,57 +8,120 @@
     android:background="?attr/colorPrimary"
     tools:context=".activities.ComposeSmsActivity">
 
-
-    <androidx.appcompat.widget.AppCompatImageView
-        android:layout_width="35dp"
-        android:layout_height="35dp"
-        android:id="@+id/back_imageView"
-        android:src="@drawable/baseline_arrow_back_24"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="12dp" />
-
-
-    <TextView
-        android:layout_width="wrap_content"
+    <androidx.appcompat.widget.Toolbar
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Select Contact"
-        android:textSize="14sp"
-        android:textStyle="bold"
+        app:theme="@style/MyActionBar"
+        android:background="?attr/colorPrimary"
+        android:id="@+id/compose_toolbar">
+
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/baseline_arrow_back_24"
+            android:id="@+id/back_button_imageView"/>
+
+
+        <TextView
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:text="New Message"
+            android:textColor="@color/white"
+            android:layout_marginStart="25dp"
+            android:textSize="18sp"/>
+
+    </androidx.appcompat.widget.Toolbar>
+
+
+    <EditText
+        android:id="@+id/to_edit_text"
         android:textColor="@color/white"
-        app:layout_constraintBottom_toBottomOf="@id/back_imageView"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/back_imageView"/>
-    
-    
-    
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/compose_toolbar"
+        android:layout_marginStart="25dp"
+        android:layout_marginEnd="25dp"
+        android:background="@null"
+        android:hint="To:"
+        android:textColorHint="@color/white"
+        android:inputType="text" />
+
+
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="match_parent"
         android:layout_marginTop="16dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/back_imageView"
+        android:layout_below="@id/to_edit_text"
+        android:layout_above="@id/send_linear_layout"
         android:background="@drawable/shape_for_compose_activity">
 
 
-        <androidx.appcompat.widget.SearchView
-            android:id="@+id/search_view"
-            app:iconifiedByDefault="false"
+        <LinearLayout
+            android:id="@+id/editText_holder_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            app:queryHint="Search For Contacts" />
+            android:orientation="horizontal">
+
+
+
+            <ImageView
+                android:id="@+id/check_button"
+                android:enabled = "false"
+                android:visibility="gone"
+                android:layout_width="0dp"
+                android:layout_weight="0.2"
+                android:layout_marginEnd="5dp"
+                android:backgroundTint="@color/white"
+                android:layout_gravity="center_vertical"
+                android:layout_height="35dp"
+                android:src="@drawable/baseline_check_24"/>
+
+        </LinearLayout>
 
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/contact_recycler_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/search_view"
-            android:padding="20dp"/>
+            android:layout_below="@id/editText_holder_layout"
+            android:padding="20dp" />
 
     </RelativeLayout>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+
+    <LinearLayout
+        android:id="@+id/send_linear_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@color/backgroundColor"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/message_edit_text"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:layout_weight="1"
+            android:background="@drawable/edit_text_bkg"
+            android:ems="10"
+            android:hint="Message..."
+            android:textColorHint="#ABABAB"
+            android:textColor="@color/textColor"
+            android:inputType="text"
+            android:padding="10dp"
+            tools:ignore="HardcodedText,SpeakableTextPresentCheck,TouchTargetSizeCheck" />
+
+        <ImageView
+            android:id="@+id/send_button"
+            android:layout_width="0dp"
+            android:layout_weight=".1"
+            android:layout_height="45dp"
+            android:layout_marginStart="5dp"
+            android:layout_marginEnd="5dp"
+            android:layout_gravity="top"
+            android:src="@drawable/sendmessagebtn"/>
+    </LinearLayout>
+
+</RelativeLayout>

@@ -13,10 +13,15 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.as.mymessage.R;
@@ -30,51 +35,35 @@ import java.util.List;
 
 public class ComposeSmsActivity extends AppCompatActivity implements RecyclerClickInterface {
 
-    private RecyclerView contactRecyclerView;
     private List<ContactRecyclerModal> contactList, filteredList;
     private ContactRecyclerAdapter adapter;
 
-    private SearchView searchView;
+    private ImageView checkButton;
     private String contactClicked;
     private String mobNumberOfClickedContact;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_compose_sms);
 
-        searchView = findViewById(R.id.search_view);
-
-        contactRecyclerView = findViewById(R.id.contact_recycler_view);
+        EditText toEditText = findViewById(R.id.to_edit_text);
+        checkButton = findViewById(R.id.check_button);
+        RecyclerView contactRecyclerView = findViewById(R.id.contact_recycler_view);
         contactRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         contactList = new ArrayList<>();
+        filteredList = new ArrayList<>();
         contactList = getContacts();
-
         adapter = new ContactRecyclerAdapter(this, contactList, this);
         contactRecyclerView.setAdapter(adapter);
 
-        //Get all the contact details
+        //Adding  textWatcher to edittext
+        toEditText.addTextChangedListener(new PhoneNumberTextWatcher());
 
-        // getContacts();
-
-        //Working with SearchView
-
-        searchView.clearFocus();
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                return false;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                filterList(newText);
-                return false;
-            }
-        });
-
+        //Making edittext to automatically get focused when activity opens
+        toEditText.requestFocus();
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
 
     }
 
@@ -109,29 +98,12 @@ public class ComposeSmsActivity extends AppCompatActivity implements RecyclerCli
         return contacts;
     }
 
-    @SuppressLint("NotifyDataSetChanged")
-    private void filterList(String newText) {
-
-        filteredList = new ArrayList<>();
-        for (ContactRecyclerModal contact : contactList) {
-            if (contact.getContactName().toLowerCase().contains(newText.toLowerCase())) {
-                filteredList.add(contact);
-
-            }
-            if (contact.getMobNumber().contains(newText)) {
-                filteredList.add(contact);
-            }
-        }
-
-        adapter.setFilteredList(filteredList);
-        adapter.notifyDataSetChanged();
-    }
 
     @Override
     public void onItemClick(int position) {
 
 
-        if (filteredList == null) {
+        if (filteredList.isEmpty()) {
             //Taking data from contactList if the filtered is null
             contactClicked = contactList.get(position).getContactName();
             mobNumberOfClickedContact = contactList.get(position).getMobNumber();
@@ -167,5 +139,40 @@ public class ComposeSmsActivity extends AppCompatActivity implements RecyclerCli
             alertDialog.getButton(android.app.AlertDialog.BUTTON_POSITIVE).setTextColor(Color.WHITE);
         }
 
+    }
+
+    private class PhoneNumberTextWatcher implements TextWatcher {
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+        }
+
+        @SuppressLint("NotifyDataSetChanged")
+        @Override
+        public void afterTextChanged(Editable s) {
+
+            String searchText = s.toString().trim();
+            if(searchText.matches(getString(R.string.phoneRegularExp))){
+                checkButton.setVisibility(View.VISIBLE);
+                checkButton.setEnabled(true);
+            }
+            else {
+                checkButton.setEnabled(false);
+            }
+            filteredList.clear();
+            for(ContactRecyclerModal contact : contactList){
+                if(contact.getContactName().toLowerCase().contains(searchText.toLowerCase()) ||
+                        contact.getMobNumber().contains(searchText)){
+                    filteredList.add(contact);
+                    adapter.setFilteredList(filteredList);
+                }
+            }
+            adapter.notifyDataSetChanged();
+        }
     }
 }

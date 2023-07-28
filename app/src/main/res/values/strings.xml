@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">Messages</string>
     <string name="snackbar_msg">No messages yet! You will be notified when you receive one.</string>
+    <string name="phoneRegularExp">^(\\+\\d{1,2}\\s?)?1?\\-?\\.?\\s?\\(?\\d{3}\\)?[\\s.-]?\\d{3}[\\s.-]?\\d{4}$</string>
 </resources>

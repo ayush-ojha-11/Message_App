@@ -36,6 +36,7 @@ import com.as.mymessage.R;
 import com.as.mymessage.adapters.ConversationRecyclerViewAdapter;
 import com.as.mymessage.adapters.RecyclerClickInterface;
 import com.as.mymessage.modals.RecyclerModalClass;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.io.Serializable;
@@ -61,6 +62,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerClickInte
     TextView textView;
     Button setDefault;
     RelativeLayout parentLayout;
+    FloatingActionButton floatingActionButton;
 
     Toolbar toolbar;
     Menu optionsMenu;
@@ -123,13 +125,11 @@ public class MainActivity extends AppCompatActivity implements RecyclerClickInte
         setDefault = findViewById(R.id.setDefaultBtn);
         parentLayout = findViewById(R.id.parent_layout);
         toolbar = findViewById(R.id.main_layout_toolbar);
+        floatingActionButton = findViewById(R.id.floating_button);
         toolbar.inflateMenu(R.menu.menu);
         toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                if(item.getItemId()==R.id.menu_compose){
-                    startActivity(new Intent(MainActivity.this, ComposeSmsActivity.class));
-                }
                 return true;
             }
         });
@@ -146,12 +146,14 @@ public class MainActivity extends AppCompatActivity implements RecyclerClickInte
 
         if (isDefaultSmsApp()) {
             recyclerView.setVisibility(View.VISIBLE);
+            floatingActionButton.setVisibility(View.VISIBLE);
             linearLayout.setVisibility(View.GONE);
             messageListFromDatabase = new ArrayList<>();
 
         }
         else {
             recyclerView.setVisibility(View.GONE);
+            floatingActionButton.setVisibility(View.GONE);
             linearLayout.setVisibility(View.VISIBLE);
             setDefault.setOnClickListener(v -> {
                 // Prompting user to select app as default
@@ -160,6 +162,15 @@ public class MainActivity extends AppCompatActivity implements RecyclerClickInte
                 startActivityForResult(roleRequestIntent, REQ_CODE_DEFAULT_APP);
             });
         }
+
+        //Listener of Floating Action Button
+
+        floatingActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this,ComposeSmsActivity.class));
+            }
+        });
 
     }
 
@@ -251,6 +262,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerClickInte
                 Toast.makeText(MainActivity.this, "App set as default", Toast.LENGTH_SHORT).show();
                 linearLayout.setVisibility(View.GONE);
                 recyclerView.setVisibility(View.VISIBLE);
+                floatingActionButton.setVisibility(View.VISIBLE);
                 mainAppFunctioning();
 
                 if (conversationRecyclerViewAdapter.getItemCount() == 0) {

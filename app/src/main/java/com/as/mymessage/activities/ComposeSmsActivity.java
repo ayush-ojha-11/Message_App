@@ -9,25 +9,35 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.telephony.SmsManager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.as.mymessage.DatabasePackage.OutGoingMessageTableModalClass;
 import com.as.mymessage.R;
 import com.as.mymessage.adapters.ContactRecyclerAdapter;
 import com.as.mymessage.adapters.RecyclerClickInterface;
 import com.as.mymessage.modals.ContactRecyclerModal;
+import com.as.mymessage.util.ChatMessagePOJO;
+import com.as.mymessage.util.TimeStampUtil;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -38,18 +48,27 @@ public class ComposeSmsActivity extends AppCompatActivity implements RecyclerCli
     private List<ContactRecyclerModal> contactList, filteredList;
     private ContactRecyclerAdapter adapter;
 
-    private ImageView checkButton;
+    private ImageView checkButton, sendButton;
     private String contactClicked;
     private String mobNumberOfClickedContact;
+    EditText toEditText,messageEditText;
+    RecyclerView contactRecyclerView;
+    TextView toolbarTextView;
+
+    boolean isContact= false;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_compose_sms);
 
-        EditText toEditText = findViewById(R.id.to_edit_text);
+        toEditText = findViewById(R.id.to_edit_text);
+        messageEditText = findViewById(R.id.message_edit_text);
+        toolbarTextView = findViewById(R.id.toolbar_textView);
         checkButton = findViewById(R.id.check_button);
-        RecyclerView contactRecyclerView = findViewById(R.id.contact_recycler_view);
+        sendButton = findViewById(R.id.send_button);
+        contactRecyclerView = findViewById(R.id.contact_recycler_view);
         contactRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         contactList = new ArrayList<>();
@@ -64,6 +83,25 @@ public class ComposeSmsActivity extends AppCompatActivity implements RecyclerCli
         //Making edittext to automatically get focused when activity opens
         toEditText.requestFocus();
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+
+        //send button
+        sendButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                String message = messageEditText.getText().toString();
+                if(!message.isEmpty()){
+                    ChatActivity obj = new ChatActivity();
+                    if(isContact) {
+                        sendSms(mobNumberOfClickedContact, message);
+                    }
+                    else{
+                        sendSms(toEditText.getText().toString(),message);
+                    }
+                }
+
+            }
+        });
 
     }
 
@@ -112,33 +150,11 @@ public class ComposeSmsActivity extends AppCompatActivity implements RecyclerCli
             mobNumberOfClickedContact = filteredList.get(position).getMobNumber();
         }
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage("Open Chat with " + contactClicked + "?")
-                .setCancelable(true)
-                .setPositiveButton("YES", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-
-                        Intent intent = new Intent(ComposeSmsActivity.this, ChatActivity.class);
-                        intent.putExtra("msgReceiverName", contactClicked);
-                        intent.putExtra("msgReceiverNumber", mobNumberOfClickedContact);
-                        startActivity(intent);
-                    }
-                }).setNegativeButton("NO", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-
-                    }
-                });
-        AlertDialog alertDialog = builder.create();
-        alertDialog.setTitle("Confirm");
-        alertDialog.show();
-        // Set alertBoc textColor white if app is in night mode
-        if (isNightMode(this)) {
-            alertDialog.getButton(android.app.AlertDialog.BUTTON_NEGATIVE).setTextColor(Color.WHITE);
-            alertDialog.getButton(android.app.AlertDialog.BUTTON_POSITIVE).setTextColor(Color.WHITE);
-        }
-
+        toolbarTextView.setText("Sending Message to "+contactClicked);
+        //Making the message edittext to get focused when a contact is clicked
+        messageEditText.requestFocus();
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+        isContact = true;
     }
 
     private class PhoneNumberTextWatcher implements TextWatcher {
@@ -174,5 +190,54 @@ public class ComposeSmsActivity extends AppCompatActivity implements RecyclerCli
             }
             adapter.notifyDataSetChanged();
         }
+    }
+
+
+    private void sendSms(String phoneNumber,String message){
+        String sent = "SMS_SENT";
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this,0,new Intent(sent),PendingIntent.FLAG_IMMUTABLE);
+        SmsManager smsManager = SmsManager.getDefault();
+        smsManager.sendTextMessage(phoneNumber,null,message,pendingIntent,null);
+    }
+
+    private final BroadcastReceiver smsStatusReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            switch (getResultCode()) {
+                case Activity.RESULT_OK:
+                    // SMS sent successfully
+                    Toast.makeText(context, "SMS sent!", Toast.LENGTH_SHORT).show();
+                    break;
+                case SmsManager.RESULT_ERROR_GENERIC_FAILURE:
+                    // Generic failure
+                    Toast.makeText(context, "SMS sending failed.", Toast.LENGTH_SHORT).show();
+                    break;
+                case SmsManager.RESULT_ERROR_NO_SERVICE:
+                    // No service (airplane mode, no signal, etc.)
+                    Toast.makeText(context, "No SMS service.", Toast.LENGTH_SHORT).show();
+                    break;
+                case SmsManager.RESULT_ERROR_NULL_PDU:
+                    // Null PDU
+                    Toast.makeText(context, "Null PDU.", Toast.LENGTH_SHORT).show();
+                    break;
+                case SmsManager.RESULT_ERROR_RADIO_OFF:
+                    // Radio off (SIM card removed)
+                    Toast.makeText(context, "SMS Not Sent", Toast.LENGTH_SHORT).show();
+                    break;
+            }
+        }
+    };
+
+    @SuppressLint("UnspecifiedRegisterReceiverFlag")
+    @Override
+    protected void onResume() {
+        registerReceiver(smsStatusReceiver,new IntentFilter("SMS_SENT"));
+        super.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        unregisterReceiver(smsStatusReceiver);
+        super.onPause();
     }
 }

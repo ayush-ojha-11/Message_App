@@ -149,7 +149,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerClickInte
             floatingActionButton.setVisibility(View.VISIBLE);
             linearLayout.setVisibility(View.GONE);
             messageListFromDatabase = new ArrayList<>();
-
+            mainAppFunctioning();
         }
         else {
             recyclerView.setVisibility(View.GONE);
@@ -230,7 +230,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerClickInte
     @Override
     protected void onResume() {
         registerReceiver(intentReceiver, intentFilter);
-        mainAppFunctioning();
+//        mainAppFunctioning();
         super.onResume();
     }
 

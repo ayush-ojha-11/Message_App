@@ -119,26 +119,4 @@ public class MessageTableModalClass implements Serializable {
         this.date = date;
     }
 
-    @Override
-    public int hashCode() {
-        return this.id;
-    }
-
-    @Override
-    public boolean equals(@Nullable Object obj) {
-        //return true if they are same objects
-        if(this == obj)
-            return true;
-
-        // if object is null or object is of another class
-        if(obj == null || obj.getClass()!= this.getClass())
-            return false;
-
-        // type casting of the argument.
-        MessageTableModalClass messageTableModalClass = (MessageTableModalClass) obj;
-
-        // comparing the state of argument with
-        // the state of 'this' Object.
-        return (messageTableModalClass.id == this.id);
-    }
 }

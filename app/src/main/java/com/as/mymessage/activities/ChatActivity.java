@@ -84,7 +84,7 @@ public class ChatActivity extends AppCompatActivity {
         Intent i = getIntent();
 
         // Getting the sender that is clicked to send him the message
-        //senderMobNumber is passed from MainActivity
+        //senderMobNumber is passed from TempActivity
         receiverMobNumber = i.getStringExtra("senderMobNumber");
 
         //if it is null it means the intent is from ComposeActivity
@@ -94,7 +94,7 @@ public class ChatActivity extends AppCompatActivity {
             receiverContactName = i.getStringExtra("msgReceiverName");
             receivedMessages = databaseHelper.messageTableModalClassDao().getAllMessagesOfASender(receiverMobNumber);
         } else {
-            //Intent is from MainActivity
+            //Intent is from TempActivity
             if (ContactCheckerUtil.isNumberInContacts(this, receiverMobNumber)) {
                 receiverContactName = ContactCheckerUtil.getContactNameFromNumber(this, receiverMobNumber);
             }
@@ -108,7 +108,7 @@ public class ChatActivity extends AppCompatActivity {
             contactNameOnToolbar.setText(receiverContactName);
         } else {
             contactNameOnToolbar.setText(receiverMobNumber);
-            if (!receiverMobNumber.matches("^(\\+\\d{1,2}\\s)?\\(?\\d{3}\\)?[\\s.-]\\d{3}[\\s.-]\\d{4}$\n")) {
+            if (!receiverMobNumber.matches(getString(R.string.phoneRegularExp))) {
                 sendLinearLayout.setVisibility(View.GONE);
                 Snackbar snackbar = Snackbar.make(sendLinearLayout, "The sender does not support replies!", Snackbar.LENGTH_INDEFINITE);
                 snackbar.setAction("OK", new View.OnClickListener() {
@@ -156,9 +156,7 @@ public class ChatActivity extends AppCompatActivity {
                 message = messageEditText.getText().toString();
                 messageEditText.getText().clear();
                 if (!message.isEmpty()) {
-
                     sendSms(receiverMobNumber, message);
-
 
                 } else {
                     messageEditText.setError("Type a message!");
@@ -186,9 +184,12 @@ public class ChatActivity extends AppCompatActivity {
 
             Bundle args = intent.getBundleExtra("sms");
             RecyclerModalClass incomingMessage = (RecyclerModalClass) args.getSerializable("object");
-            allMessages.add(new ChatMessagePOJO(false, incomingMessage.getMessage(), incomingMessage.getTimeStamp()));
-            chatRecyclerView.post(() -> chatRecyclerView.smoothScrollToPosition(chatAdapter.getItemCount() - 1));
-            chatAdapter.notifyDataSetChanged();
+            assert incomingMessage != null;
+            if(incomingMessage.getMobNumber().equals(receiverMobNumber)) {
+                allMessages.add(new ChatMessagePOJO(false, incomingMessage.getMessage(), incomingMessage.getTimeStamp()));
+                chatRecyclerView.post(() -> chatRecyclerView.smoothScrollToPosition(chatAdapter.getItemCount() - 1));
+                chatAdapter.notifyDataSetChanged();
+            }
         }
     };
 

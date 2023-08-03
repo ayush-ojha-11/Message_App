@@ -192,9 +192,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerClickInte
                 }
                 // Add the message and details(messageTableModalClass) in the hashmap to the corresponding key values
                 List<MessageTableModalClass> messages =  messagesBySender.get(messageTableModalClass.getMobNumber());
-                assert messages != null;
-                if(!messages.contains(messageTableModalClass))
-                    Objects.requireNonNull(messages).add(messageTableModalClass);
+                Objects.requireNonNull(messages).add(messageTableModalClass);
             }
 
 
@@ -204,7 +202,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerClickInte
                 MessageTableModalClass latestMessage = entry.getValue().get(entry.getValue().size() - 1);
                 RecyclerModalClass obj = new RecyclerModalClass(latestMessage.getId(),latestMessage.getImage(), latestMessage.getMobNumber(), latestMessage.getContactName(),
                         latestMessage.getMessage(), latestMessage.getDate(), latestMessage.getTime(), latestMessage.getTimeStamp());
-                if(!recyclerModalClassList.contains(obj))
+
                     recyclerModalClassList.add(obj);
             }
             // Sorting the list obtained from hashmap that most recent message appears on top

@@ -1,10 +1,6 @@
 package com.as.mymessage.activities;
 
-import static com.as.mymessage.activities.MainActivity.isNightMode;
-
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.SearchView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -13,12 +9,9 @@ import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
-import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.telephony.SmsManager;
@@ -31,13 +24,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.as.mymessage.DatabasePackage.OutGoingMessageTableModalClass;
 import com.as.mymessage.R;
 import com.as.mymessage.adapters.ContactRecyclerAdapter;
 import com.as.mymessage.adapters.RecyclerClickInterface;
 import com.as.mymessage.modals.ContactRecyclerModal;
-import com.as.mymessage.util.ChatMessagePOJO;
-import com.as.mymessage.util.TimeStampUtil;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -103,6 +93,16 @@ public class ComposeSmsActivity extends AppCompatActivity implements RecyclerCli
             }
         });
 
+        checkButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                toolbarTextView.setText("Sending Message to "+toEditText.getText());
+                //Making the message edittext to get focused when checkButton is clicked
+                messageEditText.requestFocus();
+                getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+            }
+        });
+
     }
 
     private List<ContactRecyclerModal> getContacts() {
@@ -127,8 +127,8 @@ public class ComposeSmsActivity extends AppCompatActivity implements RecyclerCli
                 @SuppressLint("Range") String phoneNumber = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
                 @SuppressLint("Range") String photoUri = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.PHOTO_URI));
 
-                    contactIds.add(id);
-                    contacts.add(new ContactRecyclerModal(id,photoUri,name,phoneNumber));
+                contactIds.add(id);
+                contacts.add(new ContactRecyclerModal(id,photoUri,name,phoneNumber));
 
             }
             cursor.close();
@@ -151,6 +151,7 @@ public class ComposeSmsActivity extends AppCompatActivity implements RecyclerCli
         }
 
         toolbarTextView.setText("Sending Message to "+contactClicked);
+        toEditText.setText(contactClicked);
         //Making the message edittext to get focused when a contact is clicked
         messageEditText.requestFocus();
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
@@ -179,6 +180,7 @@ public class ComposeSmsActivity extends AppCompatActivity implements RecyclerCli
             }
             else {
                 checkButton.setEnabled(false);
+                checkButton.setVisibility(View.GONE);
             }
             filteredList.clear();
             for(ContactRecyclerModal contact : contactList){

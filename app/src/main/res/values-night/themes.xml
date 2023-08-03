@@ -13,4 +13,12 @@
         <item name="android:textColor">#FFFFFF</item>
     </style>
 
+
+    <style name="LoginTextInputLayoutStyle" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
+        <item name="boxStrokeColor">#fff</item>
+        <item name="boxStrokeWidth">1dp</item>
+        <item name="hintTextColor">#fff</item>
+        <item name="android:textColorHint">#fff</item>
+    </style>
+
 </resources>

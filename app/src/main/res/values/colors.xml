@@ -3,11 +3,8 @@
 
     <color name="backgroundColor">#FFFFFF</color>
     <color name="textColor">#FF000000</color>
-
     <color name="sentMsgBkgColor">#E87F9D</color>
-
     <color name="receivedMsgBkgColor">#DAD7D7</color>
-
     <color name="white">#FFFFFF</color>
 
 </resources>

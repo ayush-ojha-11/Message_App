@@ -17,9 +17,6 @@ public class MessageTableModalClass implements Serializable {
     @PrimaryKey(autoGenerate = true)
     private int id;
 
-    @ColumnInfo(name="image")
-    private int image;
-
     @ColumnInfo(name="mobNumber")
     @NonNull
     private String mobNumber;
@@ -39,9 +36,9 @@ public class MessageTableModalClass implements Serializable {
     @ColumnInfo(name="timeStamp")
     private long timeStamp;
 
-    public MessageTableModalClass(int image, @NonNull String mobNumber, String contactName, String message, String date, String time, long timeStamp) {
+    public MessageTableModalClass(@NonNull String mobNumber, String contactName, String message, String date, String time, long timeStamp) {
 
-        this.image = image;
+
         if(mobNumber.matches("([0-9])") && mobNumber.charAt(0) != '+'){
             mobNumber += '+';
         }
@@ -61,9 +58,6 @@ public class MessageTableModalClass implements Serializable {
         this.id = id;
     }
 
-    public int getImage() {
-        return image;
-    }
 
     public long getTimeStamp() {
         return timeStamp;
@@ -73,9 +67,6 @@ public class MessageTableModalClass implements Serializable {
         this.timeStamp = timeStamp;
     }
 
-    public void setImage(int image) {
-        this.image = image;
-    }
 
     @NonNull
     public String getMobNumber() {

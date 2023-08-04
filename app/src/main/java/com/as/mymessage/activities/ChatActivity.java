@@ -90,11 +90,12 @@ public class ChatActivity extends AppCompatActivity {
         //if it is null it means the intent is from ComposeActivity
         if (receiverMobNumber == null) {
             //intent is from ComposeActivity
-            receiverMobNumber = i.getStringExtra("msgReceiverNumber");
-            receiverContactName = i.getStringExtra("msgReceiverName");
+            receiverMobNumber = i.getStringExtra("receiverMobNumber");
+            receiverContactName = i.getStringExtra("receiverContactName");
+
             receivedMessages = databaseHelper.messageTableModalClassDao().getAllMessagesOfASender(receiverMobNumber);
         } else {
-            //Intent is from TempActivity
+            //Intent is from MainActivity
             if (ContactCheckerUtil.isNumberInContacts(this, receiverMobNumber)) {
                 receiverContactName = ContactCheckerUtil.getContactNameFromNumber(this, receiverMobNumber);
             }
@@ -202,8 +203,7 @@ public class ChatActivity extends AppCompatActivity {
                 case Activity.RESULT_OK:
                     // SMS sent successfully
                     Toast.makeText(context, "SMS sent!", Toast.LENGTH_SHORT).show();
-                    OutGoingMessageTableModalClass sentMessage = new OutGoingMessageTableModalClass(
-                            R.drawable.baseline_message_24, receiverMobNumber, receiverContactName, message, TimeStampUtil.getDate()
+                    OutGoingMessageTableModalClass sentMessage = new OutGoingMessageTableModalClass(receiverMobNumber, receiverContactName, message, TimeStampUtil.getDate()
                             , TimeStampUtil.getTime(), TimeStampUtil.getTheTimeStamp());
 
                     allMessages.add(new ChatMessagePOJO(true, sentMessage.getMessage(), sentMessage.getTimeStamp()));

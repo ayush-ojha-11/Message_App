@@ -24,10 +24,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.as.mymessage.DatabasePackage.DatabaseHelper;
+import com.as.mymessage.DatabasePackage.OutGoingMessageTableModalClass;
 import com.as.mymessage.R;
 import com.as.mymessage.adapters.ContactRecyclerAdapter;
 import com.as.mymessage.adapters.RecyclerClickInterface;
 import com.as.mymessage.modals.ContactRecyclerModal;
+import com.as.mymessage.util.TimeStampUtil;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -46,6 +49,11 @@ public class ComposeSmsActivity extends AppCompatActivity implements RecyclerCli
     TextView toolbarTextView;
 
     boolean isContact= false;
+
+    private String receiverMobNumber, receiverContactName;
+    private String message;
+
+    DatabaseHelper databaseHelper;
 
 
     @Override
@@ -67,6 +75,8 @@ public class ComposeSmsActivity extends AppCompatActivity implements RecyclerCli
         adapter = new ContactRecyclerAdapter(this, contactList, this);
         contactRecyclerView.setAdapter(adapter);
 
+        databaseHelper = DatabaseHelper.getDB(this);
+
         //Adding  textWatcher to edittext
         toEditText.addTextChangedListener(new PhoneNumberTextWatcher());
 
@@ -79,14 +89,19 @@ public class ComposeSmsActivity extends AppCompatActivity implements RecyclerCli
             @Override
             public void onClick(View v) {
 
-                String message = messageEditText.getText().toString();
+                message = messageEditText.getText().toString();
                 if(!message.isEmpty()){
-                    ChatActivity obj = new ChatActivity();
                     if(isContact) {
                         sendSms(mobNumberOfClickedContact, message);
+                        receiverMobNumber = mobNumberOfClickedContact;
+                        receiverMobNumber = receiverMobNumber.replaceAll(" ","");
+                        receiverContactName = contactClicked;
                     }
                     else{
-                        sendSms(toEditText.getText().toString(),message);
+                        receiverMobNumber = toEditText.getText().toString();
+                        receiverMobNumber = receiverMobNumber.replaceAll(" ","");
+                        receiverContactName = null;
+                        sendSms(receiverMobNumber,message);
                     }
                 }
 
@@ -100,6 +115,8 @@ public class ComposeSmsActivity extends AppCompatActivity implements RecyclerCli
                 //Making the message edittext to get focused when checkButton is clicked
                 messageEditText.requestFocus();
                 getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+                //Make isContact false as it is not a contact
+                isContact = false;
             }
         });
 
@@ -209,7 +226,18 @@ public class ComposeSmsActivity extends AppCompatActivity implements RecyclerCli
                 case Activity.RESULT_OK:
                     // SMS sent successfully
                     Toast.makeText(context, "SMS sent!", Toast.LENGTH_SHORT).show();
+
+                    databaseHelper.outgoingMessageTableDao().addSentMessage(new OutGoingMessageTableModalClass(
+                            receiverMobNumber,receiverContactName,message,TimeStampUtil.getDate(),TimeStampUtil.getTime(),TimeStampUtil.getTheTimeStamp()));
+
+                    Intent intentToChatActivity = new Intent(ComposeSmsActivity.this,ChatActivity.class);
+                    intentToChatActivity.putExtra("receiverMobNumber",receiverMobNumber);
+                    intentToChatActivity.putExtra("receiverContactName",receiverContactName);
+                    intentToChatActivity.putExtra("message",message);
+                    intentToChatActivity.putExtra("time", TimeStampUtil.getTheTimeStamp());
+                    startActivity(intentToChatActivity);
                     break;
+
                 case SmsManager.RESULT_ERROR_GENERIC_FAILURE:
                     // Generic failure
                     Toast.makeText(context, "SMS sending failed.", Toast.LENGTH_SHORT).show();

@@ -38,7 +38,7 @@
             android:textColorHint="#ABABAB"
             android:textColor="@color/textColor"
             android:inputType="text"
-            android:padding="10dp"
+            android:padding="15dp"
             tools:ignore="HardcodedText,SpeakableTextPresentCheck,TouchTargetSizeCheck" />
 
         <ImageView

@@ -10,7 +10,6 @@ import java.io.Serializable;
 
 public class RecyclerModalClass implements Serializable {
     int id;
-    int image;
     String contactName;
     String mobNumber;
     String message;
@@ -27,8 +26,7 @@ public class RecyclerModalClass implements Serializable {
     }
 
     //For intent through SMSReceiver
-    public RecyclerModalClass (int image, String mobNumber,String contactName, String message, String date, String time) {
-        this.image = image;
+    public RecyclerModalClass (String mobNumber,String contactName, String message, String date, String time) {
         this.contactName = contactName;
         this.mobNumber= mobNumber;
         this.message = message;
@@ -38,9 +36,8 @@ public class RecyclerModalClass implements Serializable {
 
     // For main activity
     @Ignore
-    public RecyclerModalClass(int id, int image, String mobNumber,String contactName, String message,String date, String time, long timeStamp) {
+    public RecyclerModalClass(int id,String mobNumber,String contactName, String message,String date, String time, long timeStamp) {
         this.id = id;
-        this.image = image;
         this.contactName = contactName;
         this.mobNumber = mobNumber;
         this.message = message;
@@ -57,13 +54,6 @@ public class RecyclerModalClass implements Serializable {
         this.id = id;
     }
 
-    public int getImage() {
-        return image;
-    }
-
-    public void setImage(int image) {
-        this.image = image;
-    }
 
     public String getContactName() {
         return contactName;

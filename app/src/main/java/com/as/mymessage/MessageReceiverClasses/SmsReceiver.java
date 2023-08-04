@@ -27,8 +27,9 @@ import com.as.mymessage.util.TimeStampUtil;
 
 
 public class SmsReceiver extends BroadcastReceiver {
+    
+    int messageImage = R.drawable.baseline_message_24;
 
-    private static int messageImage = R.drawable.baseline_message_24;
 
     String messageReceived = null;
     String mobNumber = null;
@@ -64,9 +65,8 @@ public class SmsReceiver extends BroadcastReceiver {
         }
 
         // Adding Messages to database
-        DatabaseHelper databaseHelper = DatabaseHelper.getDB(context);
-        databaseHelper.messageTableModalClassDao().addMessage(new MessageTableModalClass(messageImage,
-                mobNumber, contactName, messageReceived, TimeStampUtil.convertToDate(time), TimeStampUtil.convertToTime(time), time));
+        databaseHelper = DatabaseHelper.getDB(context);
+        databaseHelper.messageTableModalClassDao().addMessage(new MessageTableModalClass(mobNumber, contactName, messageReceived, TimeStampUtil.convertToDate(time), TimeStampUtil.convertToTime(time), time));
 
     }
 
@@ -89,7 +89,7 @@ public class SmsReceiver extends BroadcastReceiver {
             //Sending intent in the form of Serializable
             Intent broadcastIntent = new Intent();
             Bundle args = new Bundle();
-            RecyclerModalClass recyclerModalClass = new RecyclerModalClass(messageImage,mobNumber,contactName,messageReceived,TimeStampUtil.convertToDate(time), TimeStampUtil.convertToTime(time));
+            RecyclerModalClass recyclerModalClass = new RecyclerModalClass(mobNumber,contactName,messageReceived,TimeStampUtil.convertToDate(time), TimeStampUtil.convertToTime(time));
             args.putSerializable("object",recyclerModalClass);
             broadcastIntent.setAction("SMS_RECEIVED_ACTION");
             broadcastIntent.putExtra("sms",args);

@@ -13,9 +13,6 @@ public class OutGoingMessageTableModalClass {
     @PrimaryKey(autoGenerate = true)
     private int id;
 
-    @ColumnInfo(name="image")
-    private int image;
-
     @ColumnInfo(name="mobNumber")
     @NonNull
     private String mobNumber;
@@ -35,9 +32,8 @@ public class OutGoingMessageTableModalClass {
     @ColumnInfo(name="timeStamp")
     private long timeStamp;
 
-    public OutGoingMessageTableModalClass(int image, @NonNull String mobNumber, String contactName, String message, String date, String time, long timeStamp) {
+    public OutGoingMessageTableModalClass(@NonNull String mobNumber, String contactName, String message, String date, String time, long timeStamp) {
 
-        this.image = image;
         this.mobNumber = mobNumber;
         this.contactName = contactName;
         this.message = message;
@@ -54,9 +50,7 @@ public class OutGoingMessageTableModalClass {
         this.id = id;
     }
 
-    public int getImage() {
-        return image;
-    }
+
 
     public long getTimeStamp() {
         return timeStamp;
@@ -66,9 +60,6 @@ public class OutGoingMessageTableModalClass {
         this.timeStamp = timeStamp;
     }
 
-    public void setImage(int image) {
-        this.image = image;
-    }
 
     @NonNull
     public String getMobNumber() {

@@ -95,8 +95,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerClickInte
                 messagesBySender.put(incomingMessage.getMobNumber(), new ArrayList<>());
             }
             // Add the message and details(messageTableModalClass) in the hashmap to the corresponding key values
-            Objects.requireNonNull(messagesBySender.get(incomingMessage.getMobNumber())).add(new MessageTableModalClass(incomingMessage.getImage(),
-                    incomingMessage.getMobNumber(), incomingMessage.getContactName(), incomingMessage.getMessage(), incomingMessage.getDate(), incomingMessage.getTime(), incomingMessage.getTimeStamp()));
+            Objects.requireNonNull(messagesBySender.get(incomingMessage.getMobNumber())).add(new MessageTableModalClass(incomingMessage.getMobNumber(), incomingMessage.getContactName(), incomingMessage.getMessage(), incomingMessage.getDate(), incomingMessage.getTime(), incomingMessage.getTimeStamp()));
 
             if (found) {
                 //move item from existing position to last index
@@ -200,7 +199,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerClickInte
 
             for (Map.Entry<String, List<MessageTableModalClass>> entry : messagesBySender.entrySet()) {
                 MessageTableModalClass latestMessage = entry.getValue().get(entry.getValue().size() - 1);
-                RecyclerModalClass obj = new RecyclerModalClass(latestMessage.getId(),latestMessage.getImage(), latestMessage.getMobNumber(), latestMessage.getContactName(),
+                RecyclerModalClass obj = new RecyclerModalClass(latestMessage.getId(),latestMessage.getMobNumber(), latestMessage.getContactName(),
                         latestMessage.getMessage(), latestMessage.getDate(), latestMessage.getTime(), latestMessage.getTimeStamp());
 
                     recyclerModalClassList.add(obj);

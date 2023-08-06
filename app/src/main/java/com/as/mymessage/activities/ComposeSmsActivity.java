@@ -230,19 +230,14 @@ public class ComposeSmsActivity extends AppCompatActivity implements RecyclerCli
                     // SMS sent successfully
                     Toast.makeText(context, "SMS sent!", Toast.LENGTH_SHORT).show();
 
-                    databaseHelper.outgoingMessageTableDao().addSentMessage(new OutGoingMessageTableModalClass(
-                            receiverMobNumber,receiverContactName,message,TimeStampUtil.getDate(),TimeStampUtil.getTime(),TimeStampUtil.getTheTimeStamp()));
-
-
-
+                    OutGoingMessageTableModalClass sentMessage = new OutGoingMessageTableModalClass(
+                            receiverMobNumber,receiverContactName,message,TimeStampUtil.getDate(),TimeStampUtil.getTime(),TimeStampUtil.getTheTimeStamp());
+                    databaseHelper.outgoingMessageTableDao().addSentMessage(sentMessage);
 
                     Intent intentToChatActivity = new Intent(ComposeSmsActivity.this,ChatActivity.class);
-                    intentToChatActivity.putExtra("receiverMobNumber",receiverMobNumber);
-                    intentToChatActivity.putExtra("receiverContactName",receiverContactName);
-                    intentToChatActivity.putExtra("message",message);
-                    intentToChatActivity.putExtra("timeStamp", TimeStampUtil.getTheTimeStamp());
-                    intentToChatActivity.putExtra("time",TimeStampUtil.getTime());
-                    intentToChatActivity.putExtra("date",TimeStampUtil.getDate());
+                    Bundle bundle = new Bundle();
+                    bundle.putSerializable("sentMessageObject", sentMessage);
+                    intentToChatActivity.putExtra("sentMessageBundle",bundle);
 
 
                     //THIS LINE IS FOR MainActivity to get result of the message sent inorder to update the recyclerView

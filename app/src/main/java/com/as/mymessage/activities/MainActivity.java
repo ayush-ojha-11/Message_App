@@ -32,10 +32,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.as.mymessage.DatabasePackage.DatabaseHelper;
 import com.as.mymessage.DatabasePackage.MessageTableModalClass;
+import com.as.mymessage.DatabasePackage.OutGoingMessageTableModalClass;
 import com.as.mymessage.R;
 import com.as.mymessage.adapters.ConversationRecyclerViewAdapter;
 import com.as.mymessage.adapters.RecyclerClickInterface;
 import com.as.mymessage.modals.RecyclerModalClass;
+import com.as.mymessage.util.MainActivityRecyclerItemPOJO;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -54,7 +56,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerClickInte
     private static final int RequestCodeForNewSMS = 2000;
     List<RecyclerModalClass> recyclerModalClassList = new ArrayList<>();
 
-    Map<String, List<MessageTableModalClass>> messagesBySender = new LinkedHashMap<>();
+    Map<String, MainActivityRecyclerItemPOJO> allMessagesMap = new LinkedHashMap<>();
     IntentFilter intentFilter;
     ConversationRecyclerViewAdapter conversationRecyclerViewAdapter;
     DatabaseHelper databaseHelper;
@@ -69,6 +71,9 @@ public class MainActivity extends AppCompatActivity implements RecyclerClickInte
     Menu optionsMenu;
 
     private List<MessageTableModalClass> messageListFromDatabase;
+    private List<OutGoingMessageTableModalClass> sentMessageListFromDatabase;
+    private MainActivityRecyclerItemPOJO<MessageTableModalClass> receivedMessagesPOJO;
+    private MainActivityRecyclerItemPOJO<OutGoingMessageTableModalClass> sentMessagesPOJO;
 
 
     private final BroadcastReceiver intentReceiver = new BroadcastReceiver() {
@@ -91,12 +96,14 @@ public class MainActivity extends AppCompatActivity implements RecyclerClickInte
                     break;
                 }
             }
-            if (!messagesBySender.containsKey(incomingMessage.getMobNumber())) {
-                // Add the sender and a corresponding list, if it is not already in the hashmap
-                messagesBySender.put(incomingMessage.getMobNumber(), new ArrayList<>());
-            }
-            // Add the message and details(messageTableModalClass) in the hashmap to the corresponding key values
-            Objects.requireNonNull(messagesBySender.get(incomingMessage.getMobNumber())).add(new MessageTableModalClass(incomingMessage.getMobNumber(), incomingMessage.getContactName(), incomingMessage.getMessage(), incomingMessage.getDate(), incomingMessage.getTime(), incomingMessage.getTimeStamp()));
+
+            // This logic seems to be deprecated, soon to be removed
+//            if (!allMessagesMap.containsKey(incomingMessage.getMobNumber())) {
+//                // Add the sender and a corresponding list, if it is not already in the hashmap
+//                allMessagesMap.put(incomingMessage.getMobNumber(), new ArrayList<>());
+//            }
+//            // Add the message and details(messageTableModalClass) in the hashmap to the corresponding key values
+//            Objects.requireNonNull(allMessagesMap.get(incomingMessage.getMobNumber())).add(new MessageTableModalClass(incomingMessage.getMobNumber(), incomingMessage.getContactName(), incomingMessage.getMessage(), incomingMessage.getDate(), incomingMessage.getTime(), incomingMessage.getTimeStamp()));
 
             if (found) {
                 //move item from existing position to last index
@@ -149,8 +156,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerClickInte
             linearLayout.setVisibility(View.GONE);
             messageListFromDatabase = new ArrayList<>();
             mainAppFunctioning();
-        }
-        else {
+        } else {
             recyclerView.setVisibility(View.GONE);
             floatingActionButton.setVisibility(View.GONE);
             linearLayout.setVisibility(View.VISIBLE);
@@ -167,7 +173,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerClickInte
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivityForResult(new Intent(MainActivity.this,ComposeSmsActivity.class),RequestCodeForNewSMS);
+                startActivityForResult(new Intent(MainActivity.this, ComposeSmsActivity.class), RequestCodeForNewSMS);
             }
         });
 
@@ -178,31 +184,72 @@ public class MainActivity extends AppCompatActivity implements RecyclerClickInte
             //Getting access to Room database
             databaseHelper = DatabaseHelper.getDB(this);
 
-            //Getting all the message along with other details
+            //Getting all the received message along with other details and adding to POJO
             messageListFromDatabase = databaseHelper.messageTableModalClassDao().getAllMessages();
+            receivedMessagesPOJO = new MainActivityRecyclerItemPOJO<>(messageListFromDatabase);
+
+            //Getting all the sent message along with other details and adding to POJO
+            sentMessageListFromDatabase = databaseHelper.outgoingMessageTableDao().getAllSentMessages();
+            sentMessagesPOJO = new MainActivityRecyclerItemPOJO<>(sentMessageListFromDatabase);
 
             //Initializing the hashmap to store keys as sender and a list of all the messages of that particular sender
 
             // Adding data to hashMap
-            for (MessageTableModalClass messageTableModalClass : messageListFromDatabase) {
-                if (!messagesBySender.containsKey(messageTableModalClass.getMobNumber())) {
+            for (MessageTableModalClass messageTableModalClass : receivedMessagesPOJO.getMessageList()) {
+                if (!allMessagesMap.containsKey(messageTableModalClass.getMobNumber())) {
                     // Add the sender and a corresponding list, if it is not already in the hashmap
-                    messagesBySender.put(messageTableModalClass.getMobNumber(), new ArrayList<>());
+                    allMessagesMap.put(messageTableModalClass.getMobNumber(), new MainActivityRecyclerItemPOJO<>());
                 }
                 // Add the message and details(messageTableModalClass) in the hashmap to the corresponding key values
-                List<MessageTableModalClass> messages =  messagesBySender.get(messageTableModalClass.getMobNumber());
-                Objects.requireNonNull(messages).add(messageTableModalClass);
+                MainActivityRecyclerItemPOJO<MessageTableModalClass> messages = allMessagesMap.get(messageTableModalClass.getMobNumber());
+                Objects.requireNonNull(messages).getMessageList().add(messageTableModalClass);
+            }
+
+            for (OutGoingMessageTableModalClass outGoingMessageTableModalClass : sentMessagesPOJO.getMessageList()) {
+                if (!allMessagesMap.containsKey(outGoingMessageTableModalClass.getMobNumber())) {
+                    // Add the sender and a corresponding list, if it is not already in the hashmap
+                    allMessagesMap.put(outGoingMessageTableModalClass.getMobNumber(), new MainActivityRecyclerItemPOJO<>());
+                }
+                // Add the message and details(messageTableModalClass) in the hashmap to the corresponding key values
+                MainActivityRecyclerItemPOJO<OutGoingMessageTableModalClass> messages = allMessagesMap.get(outGoingMessageTableModalClass.getMobNumber());
+                Objects.requireNonNull(messages).getMessageList().add(outGoingMessageTableModalClass);
             }
 
 
             //Adding Data to recyclerview from the hashmap
+            RecyclerModalClass obj = null;
+            for (Map.Entry<String, MainActivityRecyclerItemPOJO> entry : allMessagesMap.entrySet()) {
+                MainActivityRecyclerItemPOJO messagePOJO = entry.getValue();
+                long latestTimeStamp = 0;
+                MessageTableModalClass latestMessage1 = null;
+                OutGoingMessageTableModalClass latestMessage2 = null;
+                boolean latestMessageIsReceivedType = false;
+                for (Object item : messagePOJO.getMessageList())
+                    if (item instanceof MessageTableModalClass) {
+                        if (((MessageTableModalClass) item).getTimeStamp() > latestTimeStamp) {
+                            latestTimeStamp = ((MessageTableModalClass) item).getTimeStamp();
+                            latestMessage1 = (MessageTableModalClass)item;
+                            latestMessageIsReceivedType = true;
+                        }
+                    } else if (item instanceof OutGoingMessageTableModalClass) {
+                        if (((OutGoingMessageTableModalClass) item).getTimeStamp() > latestTimeStamp) {
+                            latestTimeStamp = ((OutGoingMessageTableModalClass) item).getTimeStamp();
+                            latestMessage2 = (OutGoingMessageTableModalClass)item;
+                            latestMessageIsReceivedType = false;
+                        }
+                    }
 
-            for (Map.Entry<String, List<MessageTableModalClass>> entry : messagesBySender.entrySet()) {
-                MessageTableModalClass latestMessage = entry.getValue().get(entry.getValue().size() - 1);
-                RecyclerModalClass obj = new RecyclerModalClass(latestMessage.getId(),latestMessage.getMobNumber(), latestMessage.getContactName(),
-                        latestMessage.getMessage(), latestMessage.getDate(), latestMessage.getTime(), latestMessage.getTimeStamp());
+                if(latestMessageIsReceivedType){
+                    obj = new RecyclerModalClass(latestMessage1.getId(), latestMessage1.getMobNumber(), latestMessage1.getContactName(),
+                            latestMessage1.getMessage(), latestMessage1.getDate(), latestMessage1.getTime(), latestMessage1.getTimeStamp());
+                }else {
+                    assert latestMessage2 != null;
+                    obj = new RecyclerModalClass(latestMessage2.getId(), latestMessage2.getMobNumber(), latestMessage2.getContactName(),
+                        latestMessage2.getMessage(), latestMessage2.getDate(), latestMessage2.getTime(), latestMessage2.getTimeStamp());
+                }
 
-                    recyclerModalClassList.add(obj);
+
+                recyclerModalClassList.add(obj);
             }
             // Sorting the list obtained from hashmap that most recent message appears on top
             recyclerModalClassList.sort(Comparator.comparingLong(RecyclerModalClass::getTimeStamp));
@@ -279,19 +326,26 @@ public class MainActivity extends AppCompatActivity implements RecyclerClickInte
             }
         }
 
-        if(requestCode == RequestCodeForNewSMS && resultCode == RESULT_OK){
+        if (requestCode == RequestCodeForNewSMS && resultCode == RESULT_OK) {
 
-            String receiver = data.getStringExtra("receiverMobNumber");
-            String message = data.getStringExtra("message");
-            String receiverContactName  = data.getStringExtra("receiverContactName");
-            String timeStamp = data.getStringExtra("timeStamp");
-            String time = data.getStringExtra("time");
-            String date = data.getStringExtra("date");
+            Bundle bundle = data.getBundleExtra("sentMessageBundle");
+            OutGoingMessageTableModalClass outGoingMessage = (OutGoingMessageTableModalClass) bundle.getSerializable("sentMessageObject");
 
+//            String receiver = data.getStringExtra("receiverMobNumber");
+//            String message = data.getStringExtra("message");
+//            String receiverContactName  = data.getStringExtra("receiverContactName");
+//            String timeStamp = data.getStringExtra("timeStamp");
+//            String time = data.getStringExtra("time");
+//            String date = data.getStringExtra("date");
+
+            sentMessagesPOJO.setMessageList(new ArrayList<OutGoingMessageTableModalClass>() {{
+                add(outGoingMessage);
+            }});
             boolean found = false;
             RecyclerModalClass foundItem = null;
 
-            RecyclerModalClass obj = new RecyclerModalClass(receiver,receiverContactName,message,date,time);
+            assert outGoingMessage != null;
+            RecyclerModalClass obj = new RecyclerModalClass(outGoingMessage.getMobNumber(), outGoingMessage.getContactName(), outGoingMessage.getMessage(), outGoingMessage.getDate(), outGoingMessage.getTime());
 
             for (RecyclerModalClass item : recyclerModalClassList) {
                 if (item.getMobNumber().equalsIgnoreCase(obj.getMobNumber())) {
@@ -354,7 +408,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerClickInte
             alertDialog.setTitle("Confirm");
             alertDialog.show();
             // Set alertBoc textColor white if app is in night mode
-            if(isNightMode(this)) {
+            if (isNightMode(this)) {
                 alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(Color.WHITE);
                 alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(Color.WHITE);
             }
@@ -370,7 +424,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerClickInte
 
         String senderClicked = recyclerModalClassList.get(position).getMobNumber();
         List<MessageTableModalClass> messagesByTheSenderClicked = new ArrayList<>();
-        messagesByTheSenderClicked = messagesBySender.get(senderClicked);
+        messagesByTheSenderClicked = databaseHelper.messageTableModalClassDao().getAllMessagesOfASender(senderClicked);
         Intent intent = new Intent(MainActivity.this, ChatActivity.class);
         intent.putExtra("list", (Serializable) messagesByTheSenderClicked);
         intent.putExtra("senderMobNumber", senderClicked);

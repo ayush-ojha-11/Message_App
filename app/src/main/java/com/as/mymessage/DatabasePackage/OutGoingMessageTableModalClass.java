@@ -8,7 +8,7 @@ import androidx.room.PrimaryKey;
 import java.io.Serializable;
 
 @Entity
-public class OutGoingMessageTableModalClass {
+public class OutGoingMessageTableModalClass implements Serializable {
 
     @PrimaryKey(autoGenerate = true)
     private int id;

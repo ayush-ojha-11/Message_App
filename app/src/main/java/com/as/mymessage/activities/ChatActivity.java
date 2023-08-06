@@ -89,9 +89,13 @@ public class ChatActivity extends AppCompatActivity {
 
         //if it is null it means the intent is from ComposeActivity
         if (receiverMobNumber == null) {
+            Bundle bundle = i.getBundleExtra("sentMessageBundle");
+            assert bundle != null;
+            OutGoingMessageTableModalClass outGoingMessage = (OutGoingMessageTableModalClass) bundle.getSerializable("sentMessageObject");
             //intent is from ComposeActivity
-            receiverMobNumber = i.getStringExtra("receiverMobNumber");
-            receiverContactName = i.getStringExtra("receiverContactName");
+            assert outGoingMessage != null;
+            receiverMobNumber = outGoingMessage.getMobNumber();
+            receiverContactName = outGoingMessage.getContactName();
 
             receivedMessages = databaseHelper.messageTableModalClassDao().getAllMessagesOfASender(receiverMobNumber);
         } else {

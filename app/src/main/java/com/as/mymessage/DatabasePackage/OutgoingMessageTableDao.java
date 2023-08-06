@@ -11,6 +11,8 @@ public interface OutgoingMessageTableDao {
 
     @Query("SELECT * FROM outgoingmessagetablemodalclass where mobNumber=:mobNumber order by id asc")
     List<OutGoingMessageTableModalClass> getAllSentMessages(String mobNumber);
+    @Query("SELECT * FROM outgoingmessagetablemodalclass order by id asc")
+    List<OutGoingMessageTableModalClass> getAllSentMessages();
 
     @Insert
     void addSentMessage(OutGoingMessageTableModalClass outGoingMessageTableModalClass);

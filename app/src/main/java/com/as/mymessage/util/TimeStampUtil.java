@@ -23,7 +23,7 @@ public class TimeStampUtil {
 
     public static String getDate(){
         Calendar c  = Calendar.getInstance();
-        SimpleDateFormat sdf = new SimpleDateFormat("EEE, MMM d, yyyy");
+        SimpleDateFormat sdf = new SimpleDateFormat("d/M/yy");
         return sdf.format(c.getTime());
     }
 

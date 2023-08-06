@@ -136,15 +136,18 @@ public class ComposeSmsActivity extends AppCompatActivity implements RecyclerCli
             HashSet<String> contactIds = new HashSet<>();
             while (cursor.moveToNext()){
                 @SuppressLint("Range") String id = cursor.getString(cursor.getColumnIndex(ContactsContract.Data.CONTACT_ID));
+                @SuppressLint("Range") String phoneNumber = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
 
-                if (contactIds.contains(id)) {
+                phoneNumber = phoneNumber.replaceAll(" ","");
+                phoneNumber = phoneNumber.trim();
+
+                if (contactIds.contains(phoneNumber)) {
                     continue; // Skip this contact if already added
                 }
                 @SuppressLint("Range") String name = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
-                @SuppressLint("Range") String phoneNumber = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
                 @SuppressLint("Range") String photoUri = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.PHOTO_URI));
 
-                contactIds.add(id);
+                contactIds.add(phoneNumber);
                 contacts.add(new ContactRecyclerModal(id,photoUri,name,phoneNumber));
 
             }
@@ -230,12 +233,23 @@ public class ComposeSmsActivity extends AppCompatActivity implements RecyclerCli
                     databaseHelper.outgoingMessageTableDao().addSentMessage(new OutGoingMessageTableModalClass(
                             receiverMobNumber,receiverContactName,message,TimeStampUtil.getDate(),TimeStampUtil.getTime(),TimeStampUtil.getTheTimeStamp()));
 
+
+
+
                     Intent intentToChatActivity = new Intent(ComposeSmsActivity.this,ChatActivity.class);
                     intentToChatActivity.putExtra("receiverMobNumber",receiverMobNumber);
                     intentToChatActivity.putExtra("receiverContactName",receiverContactName);
                     intentToChatActivity.putExtra("message",message);
-                    intentToChatActivity.putExtra("time", TimeStampUtil.getTheTimeStamp());
+                    intentToChatActivity.putExtra("timeStamp", TimeStampUtil.getTheTimeStamp());
+                    intentToChatActivity.putExtra("time",TimeStampUtil.getTime());
+                    intentToChatActivity.putExtra("date",TimeStampUtil.getDate());
+
+
+                    //THIS LINE IS FOR MainActivity to get result of the message sent inorder to update the recyclerView
+                    ComposeSmsActivity.this.setResult(RESULT_OK,intentToChatActivity);
+
                     startActivity(intentToChatActivity);
+                    finish();
                     break;
 
                 case SmsManager.RESULT_ERROR_GENERIC_FAILURE:

@@ -125,10 +125,11 @@ public class ChatActivity extends AppCompatActivity {
         allMessages = new ArrayList<>();
 
         //Adding all received and sent messages in allMessages list
-        if (!receivedMessages.isEmpty()) {
-
-            for (MessageTableModalClass message : receivedMessages) {
-                allMessages.add(new ChatMessagePOJO(false, message.getMessage(), message.getTimeStamp()));
+        if (receivedMessages!=null) {
+            if (!receivedMessages.isEmpty()) {
+                for (MessageTableModalClass message : receivedMessages) {
+                    allMessages.add(new ChatMessagePOJO(false, message.getMessage(), message.getTimeStamp()));
+                }
             }
         }
         if (!sentMessages.isEmpty()) {

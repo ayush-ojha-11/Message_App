@@ -51,6 +51,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerClickInte
 
 
     private static final int REQ_CODE_DEFAULT_APP = 1000;
+    private static final int RequestCodeForNewSMS = 2000;
     List<RecyclerModalClass> recyclerModalClassList = new ArrayList<>();
 
     Map<String, List<MessageTableModalClass>> messagesBySender = new LinkedHashMap<>();
@@ -107,7 +108,6 @@ public class MainActivity extends AppCompatActivity implements RecyclerClickInte
             conversationRecyclerViewAdapter.notifyDataSetChanged();
         }
     };
-
 
     @RequiresApi(api = Build.VERSION_CODES.Q)
     @SuppressLint("NotifyDataSetChanged")
@@ -167,7 +167,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerClickInte
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this,ComposeSmsActivity.class));
+                startActivityForResult(new Intent(MainActivity.this,ComposeSmsActivity.class),RequestCodeForNewSMS);
             }
         });
 
@@ -247,6 +247,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerClickInte
         return this.getPackageName().equals(Telephony.Sms.getDefaultSmsPackage(this));
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -276,6 +277,40 @@ public class MainActivity extends AppCompatActivity implements RecyclerClickInte
                 Toast.makeText(MainActivity.this, "App need to be set as default to use it!", Toast.LENGTH_SHORT).show();
 
             }
+        }
+
+        if(requestCode == RequestCodeForNewSMS && resultCode == RESULT_OK){
+
+            String receiver = data.getStringExtra("receiverMobNumber");
+            String message = data.getStringExtra("message");
+            String receiverContactName  = data.getStringExtra("receiverContactName");
+            String timeStamp = data.getStringExtra("timeStamp");
+            String time = data.getStringExtra("time");
+            String date = data.getStringExtra("date");
+
+            boolean found = false;
+            RecyclerModalClass foundItem = null;
+
+            RecyclerModalClass obj = new RecyclerModalClass(receiver,receiverContactName,message,date,time);
+
+            for (RecyclerModalClass item : recyclerModalClassList) {
+                if (item.getMobNumber().equalsIgnoreCase(obj.getMobNumber())) {
+                    item.setMessage(obj.getMessage());
+                    item.setDate(obj.getDate());
+                    item.setTime(obj.getTime());
+                    foundItem = item;
+                    found = true;
+                    break;
+                }
+            }
+            if (found) {
+                //move item from existing position to last index
+                recyclerModalClassList.remove(foundItem);
+                recyclerModalClassList.add(foundItem);
+            } else {
+                recyclerModalClassList.add(obj);
+            }
+            conversationRecyclerViewAdapter.notifyDataSetChanged();
         }
     }
 

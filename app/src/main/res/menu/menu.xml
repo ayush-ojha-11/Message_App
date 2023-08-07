@@ -11,18 +11,12 @@
 
 
     <item
-        android:id="@+id/menu_rate"
-        android:title="Rate us"
-        app:showAsAction="never"/>
-
-    <item
-        android:id="@+id/menu_backup"
-        android:title="Backup (Beta)"
-        app:showAsAction="never"/>
-
-
-    <item
         android:id="@+id/menu_privacy"
         android:title="Privacy Policy"
+        app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/menu_more"
+        android:title="Check out our work"
         app:showAsAction="never"/>
 </menu>

@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Telephony;
@@ -136,6 +137,21 @@ public class MainActivity extends AppCompatActivity implements RecyclerClickInte
         toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
+
+                if(item.getItemId() == R.id.menu_privacy){
+                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.privacy_policy_url)));
+                    startActivity(intent);
+                }
+
+                if(item.getItemId() == R.id.menu_about){
+                    startActivity(new Intent(MainActivity.this, AboutActivity.class));
+
+                }
+
+                if(item.getItemId() == R.id.menu_more){
+                    Intent intent = new Intent(Intent.ACTION_VIEW,Uri.parse(getString(R.string.play_store_url)));
+                    startActivity(intent);
+                }
                 return true;
             }
         });

@@ -75,10 +75,11 @@
                 android:layout_width="0dp"
                 android:layout_weight="0.2"
                 android:layout_marginEnd="5dp"
-                android:backgroundTint="@color/white"
+                android:tint ="@color/textColor"
                 android:layout_gravity="center_vertical"
                 android:layout_height="35dp"
-                android:src="@drawable/baseline_check_24"/>
+                android:src="@drawable/baseline_check_24"
+                tools:ignore="UseAppTint" />
 
         </LinearLayout>
 

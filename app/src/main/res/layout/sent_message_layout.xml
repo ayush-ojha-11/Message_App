@@ -10,7 +10,8 @@
         android:layout_marginEnd="5dp"
         android:layout_alignParentEnd="true"
         android:background="@drawable/sent_msg_bkg"
-        android:layout_marginTop="5dp">
+        android:layout_marginTop="5dp"
+        tools:ignore="UselessParent">
         
         <TextView
             android:id="@+id/sent_text_view"

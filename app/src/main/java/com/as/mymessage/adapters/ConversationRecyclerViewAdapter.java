@@ -4,22 +4,18 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.as.mymessage.R;
-import com.as.mymessage.activities.MainActivity;
 import com.as.mymessage.modals.RecyclerModalClass;
 import com.as.mymessage.util.ContactCheckerUtil;
 import com.as.mymessage.util.UtilityFunctions;
 
 import java.util.List;
-import java.util.Random;
 
 public class ConversationRecyclerViewAdapter extends RecyclerView.Adapter<ConversationViewHolder> {
 
@@ -66,7 +62,7 @@ public class ConversationRecyclerViewAdapter extends RecyclerView.Adapter<Conver
         }
 
 
-        String sender = null;
+        String sender;
         sender = recyclerList.get(position).getContactName() != null ? recyclerList.get(position).getContactName() : recyclerList.get(position).getMobNumber();
         holder.nameView.setText(sender);
         holder.bodyView.setText(recyclerList.get(position).getMessage());
@@ -74,26 +70,20 @@ public class ConversationRecyclerViewAdapter extends RecyclerView.Adapter<Conver
 
         //OnLongClickListener
 
-        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                setPosition(holder.getPosition());
-                return false;
-            }
+        holder.itemView.setOnLongClickListener(v -> {
+            setPosition(holder.getPosition());
+            return false;
         });
 
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        holder.itemView.setOnClickListener(v -> {
 
-                if(recyclerClickInterface != null){
-                    int pos = holder.getAdapterPosition();
-                    if(pos != RecyclerView.NO_POSITION){
-                        recyclerClickInterface.onItemClick(pos);
-                    }
+            if(recyclerClickInterface != null){
+                int pos = holder.getAdapterPosition();
+                if(pos != RecyclerView.NO_POSITION){
+                    recyclerClickInterface.onItemClick(pos);
                 }
-
             }
+
         });
 
     }

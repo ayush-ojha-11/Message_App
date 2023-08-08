@@ -1,7 +1,5 @@
 package com.as.mymessage.modals;
 
-import de.hdodenhof.circleimageview.CircleImageView;
-
 public class ContactRecyclerModal {
     private String id;
     private String contactPhotoUri;

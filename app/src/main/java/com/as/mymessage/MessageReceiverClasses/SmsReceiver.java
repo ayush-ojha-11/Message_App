@@ -4,6 +4,7 @@ import static com.as.mymessage.util.ContactCheckerUtil.getContactNameFromNumber;
 import static com.as.mymessage.util.ContactCheckerUtil.isNumberInContacts;
 
 
+import android.annotation.SuppressLint;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -39,6 +40,7 @@ public class SmsReceiver extends BroadcastReceiver {
     DatabaseHelper databaseHelper;
 
 
+    @SuppressLint("UnsafeProtectedBroadcastReceiver")
     @Override
     public void onReceive(Context context, Intent intent) {
 
@@ -46,7 +48,7 @@ public class SmsReceiver extends BroadcastReceiver {
         handleReceiveRequest(context, intent);
 
         // Notifying the user about the incoming message
-        NotificationChannel mChannel = null;
+        NotificationChannel mChannel;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             mChannel = new NotificationChannel("01", "notification", NotificationManager.IMPORTANCE_HIGH);
             NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context, "01");
@@ -62,6 +64,8 @@ public class SmsReceiver extends BroadcastReceiver {
             NotificationManager manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
             manager.createNotificationChannel(mChannel);
             manager.notify(0, mBuilder.build());
+
+
         }
 
         // Adding Messages to database

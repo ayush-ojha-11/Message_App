@@ -1,9 +1,7 @@
 package com.as.mymessage.adapters;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
@@ -21,7 +19,7 @@ public class ContactRecyclerAdapter extends RecyclerView.Adapter<ContactRecycler
     Context context;
     List<ContactRecyclerModal> list;
 
-    private final RecyclerClickInterface recyclerClickInterface;;
+    private final RecyclerClickInterface recyclerClickInterface;
 
     //For searching contacts in searchView
     public void setFilteredList(List<ContactRecyclerModal> filteredList){
@@ -61,14 +59,11 @@ public class ContactRecyclerAdapter extends RecyclerView.Adapter<ContactRecycler
                 holder.contactPhotoImageView.setImageResource(R.drawable.baseline_person_24);
         }
 
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(recyclerClickInterface!=null){
-                    int pos = holder.getAdapterPosition();
-                    if(pos!=RecyclerView.NO_POSITION){
-                        recyclerClickInterface.onItemClick(pos);
-                    }
+        holder.itemView.setOnClickListener(v -> {
+            if(recyclerClickInterface!=null){
+                int pos = holder.getAdapterPosition();
+                if(pos!=RecyclerView.NO_POSITION){
+                    recyclerClickInterface.onItemClick(pos);
                 }
             }
         });

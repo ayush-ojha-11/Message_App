@@ -5,7 +5,6 @@ import android.app.AlertDialog;
 import android.app.role.RoleManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Configuration;
@@ -72,8 +71,6 @@ public class MainActivity extends AppCompatActivity implements RecyclerClickInte
     Menu optionsMenu;
 
     private List<MessageTableModalClass> messageListFromDatabase;
-    private List<OutGoingMessageTableModalClass> sentMessageListFromDatabase;
-    private MainActivityRecyclerItemPOJO<MessageTableModalClass> receivedMessagesPOJO;
     private MainActivityRecyclerItemPOJO<OutGoingMessageTableModalClass> sentMessagesPOJO;
 
 
@@ -84,10 +81,12 @@ public class MainActivity extends AppCompatActivity implements RecyclerClickInte
             //Receiving Intent from broadcast and adding data to recyclerView
 
             Bundle args = intent.getBundleExtra("sms");
+            assert args != null;
             RecyclerModalClass incomingMessage = (RecyclerModalClass) args.getSerializable("object");
             boolean found = false;
             RecyclerModalClass foundItem = null;
             for (RecyclerModalClass item : recyclerModalClassList) {
+                assert incomingMessage != null;
                 if (item.getMobNumber().equalsIgnoreCase(incomingMessage.getMobNumber())) {
                     item.setMessage(incomingMessage.getMessage());
                     item.setDate(incomingMessage.getDate());
@@ -134,26 +133,23 @@ public class MainActivity extends AppCompatActivity implements RecyclerClickInte
         toolbar = findViewById(R.id.main_layout_toolbar);
         floatingActionButton = findViewById(R.id.floating_button);
         toolbar.inflateMenu(R.menu.menu);
-        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
+        toolbar.setOnMenuItemClickListener(item -> {
 
-                if(item.getItemId() == R.id.menu_privacy){
-                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.privacy_policy_url)));
-                    startActivity(intent);
-                }
-
-                if(item.getItemId() == R.id.menu_about){
-                    startActivity(new Intent(MainActivity.this, AboutActivity.class));
-
-                }
-
-                if(item.getItemId() == R.id.menu_more){
-                    Intent intent = new Intent(Intent.ACTION_VIEW,Uri.parse(getString(R.string.play_store_url)));
-                    startActivity(intent);
-                }
-                return true;
+            if(item.getItemId() == R.id.menu_privacy){
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.privacy_policy_url)));
+                startActivity(intent);
             }
+
+            if(item.getItemId() == R.id.menu_about){
+                startActivity(new Intent(MainActivity.this, AboutActivity.class));
+
+            }
+
+            if(item.getItemId() == R.id.menu_more){
+                Intent intent = new Intent(Intent.ACTION_VIEW,Uri.parse(getString(R.string.play_store_url)));
+                startActivity(intent);
+            }
+            return true;
         });
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext());
@@ -186,15 +182,11 @@ public class MainActivity extends AppCompatActivity implements RecyclerClickInte
 
         //Listener of Floating Action Button
 
-        floatingActionButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivityForResult(new Intent(MainActivity.this, ComposeSmsActivity.class), RequestCodeForNewSMS);
-            }
-        });
+        floatingActionButton.setOnClickListener(v -> startActivityForResult(new Intent(MainActivity.this, ComposeSmsActivity.class), RequestCodeForNewSMS));
 
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private void mainAppFunctioning() {
         try {
             //Getting access to Room database
@@ -202,10 +194,10 @@ public class MainActivity extends AppCompatActivity implements RecyclerClickInte
 
             //Getting all the received message along with other details and adding to POJO
             messageListFromDatabase = databaseHelper.messageTableModalClassDao().getAllMessages();
-            receivedMessagesPOJO = new MainActivityRecyclerItemPOJO<>(messageListFromDatabase);
+            MainActivityRecyclerItemPOJO<MessageTableModalClass> receivedMessagesPOJO = new MainActivityRecyclerItemPOJO<>(messageListFromDatabase);
 
             //Getting all the sent message along with other details and adding to POJO
-            sentMessageListFromDatabase = databaseHelper.outgoingMessageTableDao().getAllSentMessages();
+            List<OutGoingMessageTableModalClass> sentMessageListFromDatabase = databaseHelper.outgoingMessageTableDao().getAllSentMessages();
             sentMessagesPOJO = new MainActivityRecyclerItemPOJO<>(sentMessageListFromDatabase);
 
             //Initializing the hashmap to store keys as sender and a list of all the messages of that particular sender
@@ -233,7 +225,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerClickInte
 
 
             //Adding Data to recyclerview from the hashmap
-            RecyclerModalClass obj = null;
+            RecyclerModalClass obj;
             for (Map.Entry<String, MainActivityRecyclerItemPOJO> entry : allMessagesMap.entrySet()) {
                 MainActivityRecyclerItemPOJO messagePOJO = entry.getValue();
                 long latestTimeStamp = 0;
@@ -276,13 +268,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerClickInte
         }
         if (conversationRecyclerViewAdapter.getItemCount() == 0) {
             Snackbar snackbar = Snackbar.make(parentLayout, R.string.snackbar_msg, Snackbar.LENGTH_INDEFINITE);
-            snackbar.setAction("OK", new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    snackbar.dismiss();
-
-                }
-            }).show();
+            snackbar.setAction("OK", v -> snackbar.dismiss()).show();
         }
     }
 
@@ -328,13 +314,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerClickInte
 
                 if (conversationRecyclerViewAdapter.getItemCount() == 0) {
                     Snackbar snackbar = Snackbar.make(parentLayout, R.string.snackbar_msg, Snackbar.LENGTH_INDEFINITE);
-                    snackbar.setAction("OK", new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            snackbar.dismiss();
-
-                        }
-                    }).show();
+                    snackbar.setAction("OK", v -> snackbar.dismiss()).show();
                 }
             } else if (resultCode == RESULT_CANCELED) {
                 Toast.makeText(MainActivity.this, "App need to be set as default to use it!", Toast.LENGTH_SHORT).show();
@@ -344,15 +324,10 @@ public class MainActivity extends AppCompatActivity implements RecyclerClickInte
 
         if (requestCode == RequestCodeForNewSMS && resultCode == RESULT_OK) {
 
+            assert data != null;
             Bundle bundle = data.getBundleExtra("sentMessageBundle");
+            assert bundle != null;
             OutGoingMessageTableModalClass outGoingMessage = (OutGoingMessageTableModalClass) bundle.getSerializable("sentMessageObject");
-
-//            String receiver = data.getStringExtra("receiverMobNumber");
-//            String message = data.getStringExtra("message");
-//            String receiverContactName  = data.getStringExtra("receiverContactName");
-//            String timeStamp = data.getStringExtra("timeStamp");
-//            String time = data.getStringExtra("time");
-//            String date = data.getStringExtra("date");
 
             sentMessagesPOJO.setMessageList(new ArrayList<OutGoingMessageTableModalClass>() {{
                 add(outGoingMessage);
@@ -397,28 +372,19 @@ public class MainActivity extends AppCompatActivity implements RecyclerClickInte
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setMessage("If you delete this, it is permanent! Continue to delete?")
                     .setCancelable(true)
-                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            String mobNumberToBeDeleted = recyclerModalClassList.get(conversationRecyclerViewAdapter.getPosition()).getMobNumber();
-                            // deleting all the messages of above number from the database
-                            databaseHelper.messageTableModalClassDao().deleteMessage(mobNumberToBeDeleted);
-                            databaseHelper.outgoingMessageTableDao().deleteMessages(mobNumberToBeDeleted);
-                            //deleting from the list and notifying to the adapter
-                            recyclerModalClassList.remove(conversationRecyclerViewAdapter.getPosition());
-                            conversationRecyclerViewAdapter.notifyItemRemoved(conversationRecyclerViewAdapter.getPosition());
-                            conversationRecyclerViewAdapter.notifyItemRangeChanged(conversationRecyclerViewAdapter.getPosition(),
-                                    recyclerModalClassList.size() - conversationRecyclerViewAdapter.getPosition());
-                            Toast.makeText(MainActivity.this, "Deleted!", Toast.LENGTH_SHORT).show();
+                    .setPositiveButton("Yes", (dialog, which) -> {
+                        String mobNumberToBeDeleted = recyclerModalClassList.get(conversationRecyclerViewAdapter.getPosition()).getMobNumber();
+                        // deleting all the messages of above number from the database
+                        databaseHelper.messageTableModalClassDao().deleteMessage(mobNumberToBeDeleted);
+                        databaseHelper.outgoingMessageTableDao().deleteMessages(mobNumberToBeDeleted);
+                        //deleting from the list and notifying to the adapter
+                        recyclerModalClassList.remove(conversationRecyclerViewAdapter.getPosition());
+                        conversationRecyclerViewAdapter.notifyItemRemoved(conversationRecyclerViewAdapter.getPosition());
+                        conversationRecyclerViewAdapter.notifyItemRangeChanged(conversationRecyclerViewAdapter.getPosition(),
+                                recyclerModalClassList.size() - conversationRecyclerViewAdapter.getPosition());
+                        Toast.makeText(MainActivity.this, "Deleted!", Toast.LENGTH_SHORT).show();
 
-                        }
-                    }).setNegativeButton("No", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.cancel();
-
-                        }
-                    });
+                    }).setNegativeButton("No", (dialog, which) -> dialog.cancel());
 
             AlertDialog alertDialog = builder.create();
             alertDialog.setTitle("Confirm");
@@ -439,7 +405,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerClickInte
     public void onItemClick(int position) {
 
         String senderClicked = recyclerModalClassList.get(position).getMobNumber();
-        List<MessageTableModalClass> messagesByTheSenderClicked = new ArrayList<>();
+        List<MessageTableModalClass> messagesByTheSenderClicked;
         messagesByTheSenderClicked = databaseHelper.messageTableModalClassDao().getAllMessagesOfASender(senderClicked);
         Intent intent = new Intent(MainActivity.this, ChatActivity.class);
         intent.putExtra("list", (Serializable) messagesByTheSenderClicked);

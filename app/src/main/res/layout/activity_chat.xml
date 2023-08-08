@@ -39,7 +39,8 @@
             android:textColor="@color/textColor"
             android:inputType="text"
             android:padding="15dp"
-            tools:ignore="HardcodedText,SpeakableTextPresentCheck,TouchTargetSizeCheck" />
+            tools:ignore="HardcodedText,SpeakableTextPresentCheck,TouchTargetSizeCheck"
+            android:importantForAutofill="no" />
 
         <ImageView
             android:id="@+id/send_button"
@@ -47,8 +48,9 @@
             android:layout_weight=".1"
             android:layout_height="45dp"
             android:layout_marginStart="5dp"
-            android:layout_gravity="top"
-            android:src="@drawable/sendmessagebtn"/>
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/sendmessagebtn"
+            tools:ignore="ContentDescription" />
     </LinearLayout>
 
 
@@ -73,7 +75,8 @@
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
                 android:scaleType="centerCrop"
-                android:src="@drawable/baseline_arrow_back_24"/>
+                android:src="@drawable/baseline_arrow_back_24"
+                tools:ignore="ContentDescription" />
 
             <TextView
                 android:layout_marginStart="10dp"
@@ -83,7 +86,8 @@
                 android:id="@+id/toolbar_contact_tv"
                 android:text="Contact Name"
                 android:textSize="22sp"
-                android:textColor="@color/white"/>
+                android:textColor="@color/white"
+                tools:ignore="HardcodedText" />
 
         </LinearLayout>
     </androidx.appcompat.widget.Toolbar>

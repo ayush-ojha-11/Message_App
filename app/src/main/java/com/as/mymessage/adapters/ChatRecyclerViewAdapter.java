@@ -8,13 +8,9 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.as.mymessage.DatabasePackage.MessageTableModalClass;
-import com.as.mymessage.DatabasePackage.OutGoingMessageTableModalClass;
 import com.as.mymessage.R;
-import com.as.mymessage.modals.ChatRecyclerModal;
 import com.as.mymessage.util.ChatMessagePOJO;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class ChatRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {

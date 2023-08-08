@@ -22,7 +22,8 @@
             android:textSize="22sp"
             android:text="Messages"
             android:textColor="@color/white"
-            android:fontFamily="monospace"/>
+            android:fontFamily="monospace"
+            tools:ignore="HardcodedText" />
 
     </androidx.appcompat.widget.Toolbar>
 
@@ -80,6 +81,8 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
         android:layout_margin="35dp"
-        android:src="@drawable/baseline_message_24"/>
+        android:src="@drawable/baseline_message_24"
+        android:contentDescription="GoToComposeActivity"
+        tools:ignore="HardcodedText" />
 
 </RelativeLayout>

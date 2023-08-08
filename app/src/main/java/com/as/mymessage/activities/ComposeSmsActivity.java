@@ -41,7 +41,7 @@ public class ComposeSmsActivity extends AppCompatActivity implements RecyclerCli
     private List<ContactRecyclerModal> contactList, filteredList;
     private ContactRecyclerAdapter adapter;
 
-    private ImageView checkButton, sendButton;
+    private ImageView checkButton;
     private String contactClicked;
     private String mobNumberOfClickedContact;
     EditText toEditText,messageEditText;
@@ -55,7 +55,10 @@ public class ComposeSmsActivity extends AppCompatActivity implements RecyclerCli
 
     DatabaseHelper databaseHelper;
 
+    private ImageView backButton;
 
+
+    @SuppressLint("SetTextI18n")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,7 +68,8 @@ public class ComposeSmsActivity extends AppCompatActivity implements RecyclerCli
         messageEditText = findViewById(R.id.message_edit_text);
         toolbarTextView = findViewById(R.id.toolbar_textView);
         checkButton = findViewById(R.id.check_button);
-        sendButton = findViewById(R.id.send_button);
+        backButton = findViewById(R.id.back_button_imageView);
+        ImageView sendButton = findViewById(R.id.send_button);
         contactRecyclerView = findViewById(R.id.contact_recycler_view);
         contactRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
@@ -85,40 +89,39 @@ public class ComposeSmsActivity extends AppCompatActivity implements RecyclerCli
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
 
         //send button
-        sendButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        sendButton.setOnClickListener(v -> {
 
-                message = messageEditText.getText().toString();
-                if(!message.isEmpty()){
-                    if(isContact) {
-                        sendSms(mobNumberOfClickedContact, message);
-                        receiverMobNumber = mobNumberOfClickedContact;
-                        receiverMobNumber = receiverMobNumber.replaceAll(" ","");
-                        receiverContactName = contactClicked;
-                    }
-                    else{
-                        receiverMobNumber = toEditText.getText().toString();
-                        receiverMobNumber = receiverMobNumber.replaceAll(" ","");
-                        receiverContactName = null;
-                        sendSms(receiverMobNumber,message);
-                    }
+            message = messageEditText.getText().toString();
+            if(!message.isEmpty()){
+                if(isContact) {
+                    sendSms(mobNumberOfClickedContact, message);
+                    receiverMobNumber = mobNumberOfClickedContact;
+                    receiverMobNumber = receiverMobNumber.replaceAll(" ","");
+                    receiverContactName = contactClicked;
                 }
-
+                else{
+                    receiverMobNumber = toEditText.getText().toString();
+                    receiverMobNumber = receiverMobNumber.replaceAll(" ","");
+                    receiverContactName = null;
+                    sendSms(receiverMobNumber,message);
+                }
             }
+
         });
 
-        checkButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                toolbarTextView.setText("Sending Message to "+toEditText.getText());
-                //Making the message edittext to get focused when checkButton is clicked
-                messageEditText.requestFocus();
-                getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
-                //Make isContact false as it is not a contact
-                isContact = false;
-            }
+        checkButton.setOnClickListener(v -> {
+            toolbarTextView.setText("Sending Message to "+toEditText.getText());
+            //Making the message edittext to get focused when checkButton is clicked
+            messageEditText.requestFocus();
+            getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+            //Make isContact false as it is not a contact
+            isContact = false;
         });
+
+
+        //Back Button
+
+        backButton.setOnClickListener(v -> onBackPressed());
 
     }
 
@@ -157,6 +160,7 @@ public class ComposeSmsActivity extends AppCompatActivity implements RecyclerCli
     }
 
 
+    @SuppressLint("SetTextI18n")
     @Override
     public void onItemClick(int position) {
 

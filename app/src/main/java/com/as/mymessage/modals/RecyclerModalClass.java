@@ -4,8 +4,6 @@ package com.as.mymessage.modals;
 import androidx.annotation.Nullable;
 import androidx.room.Ignore;
 
-import com.as.mymessage.DatabasePackage.MessageTableModalClass;
-
 import java.io.Serializable;
 
 public class RecyclerModalClass implements Serializable {

@@ -30,9 +30,6 @@
             android:name=".activities.AboutActivity"
             android:exported="false" />
         <activity
-            android:name=".activities.PrivacyPolicyActivity"
-            android:exported="false" />
-        <activity
             android:name=".activities.ChatActivity"
             android:exported="false" />
         <activity

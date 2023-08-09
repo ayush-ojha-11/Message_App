@@ -1,6 +1,8 @@
 package com.as.mymessage.adapters;
 
 import android.content.Context;
+import android.text.method.LinkMovementMethod;
+import android.text.util.Linkify;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,8 +44,9 @@ public class ChatRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.V
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         if(allMessages.get(position).isSent())
             ((SentViewHolder) holder).sentMessageTextView.setText(allMessages.get(position).getMessage());
-        else
+        else {
             ((ReceiveViewHolder) holder).receivedMessageTextView.setText(allMessages.get(position).getMessage());
+        }
     }
 
     @Override

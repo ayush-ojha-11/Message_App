@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
     <color name="backgroundColor">#FFFFFF</color>
     <color name="textColor">#FF000000</color>
     <color name="sentMsgBkgColor">#E87F9D</color>
     <color name="receivedMsgBkgColor">#DAD7D7</color>
     <color name="white">#FFFFFF</color>
-
+    <color name="textLinkColor">#0000EE</color>
 </resources>

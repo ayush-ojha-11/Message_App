@@ -18,9 +18,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="This is sent message"
+            android:autoLink="web"
             android:padding="10dp"
             android:maxWidth="275dp"
             android:textSize="18sp"
+            android:textColorLink="@color/textLinkColor"
             android:textColor="@color/textColor"
             tools:ignore="HardcodedText" />
     </RelativeLayout>

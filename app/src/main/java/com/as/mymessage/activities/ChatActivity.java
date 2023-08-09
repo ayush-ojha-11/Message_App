@@ -149,7 +149,7 @@ public class ChatActivity extends AppCompatActivity {
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         chatRecyclerView.setLayoutManager(linearLayoutManager);
-        chatAdapter = new ChatRecyclerViewAdapter(getApplicationContext(), allMessages);
+        chatAdapter = new ChatRecyclerViewAdapter(this, allMessages);
         chatRecyclerView.setAdapter(chatAdapter);
 
         chatAdapter.notifyDataSetChanged();

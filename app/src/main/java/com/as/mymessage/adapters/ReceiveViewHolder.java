@@ -1,5 +1,7 @@
 package com.as.mymessage.adapters;
 
+import android.text.method.LinkMovementMethod;
+import android.text.util.Linkify;
 import android.view.View;
 import android.widget.TextView;
 
@@ -15,5 +17,6 @@ public class ReceiveViewHolder extends RecyclerView.ViewHolder{
     public ReceiveViewHolder(@NonNull View itemView) {
         super(itemView);
         receivedMessageTextView = itemView.findViewById(R.id.received_text_view);
+        //receivedMessageTextView.setMovementMethod(LinkMovementMethod.getInstance());
     }
 }

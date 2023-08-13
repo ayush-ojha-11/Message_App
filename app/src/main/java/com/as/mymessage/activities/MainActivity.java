@@ -149,6 +149,11 @@ public class MainActivity extends AppCompatActivity implements RecyclerClickInte
                 Intent intent = new Intent(Intent.ACTION_VIEW,Uri.parse(getString(R.string.play_store_url)));
                 startActivity(intent);
             }
+
+            if(item.getItemId() == R.id.menu_rate){
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.app_link)));
+                startActivity(intent);
+            }
             return true;
         });
 
@@ -172,11 +177,16 @@ public class MainActivity extends AppCompatActivity implements RecyclerClickInte
             recyclerView.setVisibility(View.GONE);
             floatingActionButton.setVisibility(View.GONE);
             linearLayout.setVisibility(View.VISIBLE);
-            setDefault.setOnClickListener(v -> {
+            setDefault.setOnClickListener((View v) -> {
                 // Prompting user to select app as default
-                RoleManager roleManager = getApplicationContext().getSystemService(RoleManager.class);
-                Intent roleRequestIntent = roleManager.createRequestRoleIntent(RoleManager.ROLE_SMS);
-                startActivityForResult(roleRequestIntent, REQ_CODE_DEFAULT_APP);
+                try {
+                    RoleManager roleManager = getApplicationContext().getSystemService(RoleManager.class);
+                    Intent roleRequestIntent = roleManager.createRequestRoleIntent(RoleManager.ROLE_SMS);
+                    startActivityForResult(roleRequestIntent, REQ_CODE_DEFAULT_APP);
+                }
+                catch (Exception e){
+                    e.printStackTrace();
+                }
             });
         }
 

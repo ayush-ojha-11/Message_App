@@ -10,16 +10,17 @@ android {
         applicationId "com.as.mymessage"
         minSdk 24
         targetSdk 33
-        versionCode 1
-        versionName "1.0.0"
-
+        versionCode 3
+        versionName "1.0.1"
+        multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             debuggable false
+            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }

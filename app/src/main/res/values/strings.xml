@@ -5,4 +5,5 @@
     <string name="privacy_policy_url">https://doc-hosting.flycricket.io/messages-by-finest-platforms/8722cfa8-01da-45bd-99ee-26e602c1d509/privacy</string>
     <string name="about_description">The app offers a clean and beautiful user interface for the users to interact with the app and send and receive messages hassle free. \nThe app does not collect or store any information on the servers. All the permissions that are asked are only required for efficient working of the app.\nAll your messages are stored on your local storage. Therefore, don\'t worry about the privacy. Feel free to use the app.\n\nNOTE: MMS feature will be rolled out soon. Backup feature will also be rolled out in further version updates.\n\nWe will be pleased if you provide us suggestions about how we can improve the app. We will work hard to come up with each and every user request. \n\nThank you For Choosing Us.</string>
     <string name="play_store_url">https://play.google.com/store/apps/dev?id=6159183326535855658</string>
+    <string name="app_link"><![CDATA[https://play.google.com/store/apps/details?id=com.as.mymessage&pcampaignid=web_share]]></string>
 </resources>

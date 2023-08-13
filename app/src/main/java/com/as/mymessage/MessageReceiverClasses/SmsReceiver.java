@@ -29,7 +29,7 @@ import com.as.mymessage.util.TimeStampUtil;
 
 public class SmsReceiver extends BroadcastReceiver {
     
-    int messageImage = R.drawable.baseline_message_24;
+    int messageImage = R.mipmap.ic_launcher;
 
 
     String messageReceived = null;
@@ -53,6 +53,8 @@ public class SmsReceiver extends BroadcastReceiver {
             mChannel = new NotificationChannel("01", "notification", NotificationManager.IMPORTANCE_HIGH);
             NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context, "01");
             mBuilder.setSmallIcon(messageImage);
+            mBuilder.setBadgeIconType(messageImage);
+            mBuilder.setAutoCancel(true);
             if (contactName != null) mBuilder.setContentTitle(contactName);
             else mBuilder.setContentTitle(mobNumber);
             mBuilder.setContentText(messageReceived);

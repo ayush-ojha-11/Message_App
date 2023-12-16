@@ -3,7 +3,7 @@
     <color name="backgroundColor">#FFFFFF</color>
     <color name="textColor">#FF000000</color>
     <color name="sentMsgBkgColor">#E87F9D</color>
-    <color name="receivedMsgBkgColor">#DAD7D7</color>
+    <color name="receivedMsgBkgColor">#D2EFEDED</color>
     <color name="white">#FFFFFF</color>
     <color name="textLinkColor">#0000EE</color>
 </resources>

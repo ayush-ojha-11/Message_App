@@ -92,7 +92,7 @@ public class ComposeSmsActivity extends AppCompatActivity implements RecyclerCli
         sendButton.setOnClickListener(v -> {
 
             message = messageEditText.getText().toString();
-            if(!message.isEmpty()){
+            if(!message.isEmpty() && !toEditText.getText().toString().isEmpty()){
                 if(isContact) {
                     sendSms(mobNumberOfClickedContact, message);
                     receiverMobNumber = mobNumberOfClickedContact;

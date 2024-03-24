@@ -2,9 +2,8 @@
     <!-- Base application theme. -->
     <style name="Base.Theme.MyMessage" parent="Theme.Material3.DayNight.NoActionBar">
 
-
-        <item name="colorPrimary">#3A0B42</item>
-
+        <item name="colorPrimary">#3B3C57</item>
+        <item name="android:textColor">@color/textColor</item>
 
     </style>
 

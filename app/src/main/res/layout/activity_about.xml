@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/backgroundColor"
     android:padding="16dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:gravity="center">
 
         <!-- App Icon and Name -->
         <ImageView
@@ -26,7 +27,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/app_name"
-            android:textSize="24sp"
+            android:textSize="26sp"
+            android:textAlignment="center"
             android:textStyle="bold"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="8dp"/>
@@ -35,9 +37,8 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Version 1.0.1"
-            android:textSize="16sp"
-            android:textColor="@android:color/darker_gray"
+            android:text="Version 1.0.10"
+            android:textSize="12sp"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="4dp"
             tools:ignore="HardcodedText" />
@@ -46,9 +47,10 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Messages is a SMS messaging app for Android"
-            android:textSize="16sp"
+            android:text="Messages are stored locally on your device and not on the cloud."
+            android:textSize="18sp"
             android:layout_marginTop="16dp"
+            android:gravity="center"
             tools:ignore="HardcodedText" />
 
         <!-- Additional Information (Optional) -->
@@ -56,18 +58,18 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/about_description"
-            android:textSize="16sp"
-            android:layout_marginTop="16dp"/>
+            android:textSize="14sp"
+            android:layout_marginTop="16dp"
+            android:gravity="center"/>
 
         <!-- Contact Information (Optional) -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Contact us at: finest.helpdesk@gmail.com"
-            android:textSize="16sp"
+            android:text="Contact: ayushojha1512@gmail.com"
+            android:textSize="14sp"
             android:layout_marginTop="16dp"
+            android:gravity="center"
             tools:ignore="HardcodedText" />
-
     </LinearLayout>
 </ScrollView>
-

@@ -28,9 +28,6 @@ import com.as.mymessage.util.TimeStampUtil;
 
 
 public class SmsReceiver extends BroadcastReceiver {
-    
-    int messageImage = R.mipmap.ic_launcher;
-
 
     String messageReceived = null;
     String mobNumber = null;
@@ -50,13 +47,17 @@ public class SmsReceiver extends BroadcastReceiver {
         // Notifying the user about the incoming message
         NotificationChannel mChannel;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            mChannel = new NotificationChannel("01", "notification", NotificationManager.IMPORTANCE_HIGH);
+            mChannel = new NotificationChannel("01", "SMS Notifications", NotificationManager.IMPORTANCE_HIGH);
             NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context, "01");
-            mBuilder.setSmallIcon(messageImage);
-            mBuilder.setBadgeIconType(messageImage);
+            //icon
+            mBuilder.setSmallIcon(R.drawable.ic_stat_name);
             mBuilder.setAutoCancel(true);
-            if (contactName != null) mBuilder.setContentTitle(contactName);
-            else mBuilder.setContentTitle(mobNumber);
+            //title
+            if (contactName != null)
+                mBuilder.setContentTitle(contactName);
+            else
+                mBuilder.setContentTitle(mobNumber);
+            //content
             mBuilder.setContentText(messageReceived);
             mBuilder.setStyle(new NotificationCompat.BigTextStyle().bigText(messageReceived));
             Intent notificationIntent = new Intent(context, MainActivity.class);
@@ -66,8 +67,6 @@ public class SmsReceiver extends BroadcastReceiver {
             NotificationManager manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
             manager.createNotificationChannel(mChannel);
             manager.notify(0, mBuilder.build());
-
-
         }
 
         // Adding Messages to database

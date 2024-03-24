@@ -1,8 +1,6 @@
 package com.as.mymessage.adapters;
 
 import android.content.Context;
-import android.text.method.LinkMovementMethod;
-import android.text.util.Linkify;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.as.mymessage.R;
 import com.as.mymessage.util.ChatMessagePOJO;
+import com.as.mymessage.util.TimeStampUtil;
 
 import java.util.List;
 
@@ -42,10 +41,14 @@ public class ChatRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.V
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        if(allMessages.get(position).isSent())
+        if(allMessages.get(position).isSent()){
             ((SentViewHolder) holder).sentMessageTextView.setText(allMessages.get(position).getMessage());
+            ((SentViewHolder) holder).sentTimeView.setText(TimeStampUtil.convertToTime(allMessages.get(position).getTimeStamp()));
+        }
+
         else {
             ((ReceiveViewHolder) holder).receivedMessageTextView.setText(allMessages.get(position).getMessage());
+            ((ReceiveViewHolder) holder).receivedTimeView.setText(TimeStampUtil.convertToTime(allMessages.get(position).getTimeStamp()));
         }
     }
 
@@ -56,7 +59,9 @@ public class ChatRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.V
 
     @Override
     public int getItemViewType(int position) {
-       if(allMessages.get(position).isSent()) return 1;
-       else return 0;
+       if(allMessages.get(position).isSent())
+           return 1;
+       else
+           return 0;
     }
 }

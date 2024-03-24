@@ -77,6 +77,8 @@ public class ChatActivity extends AppCompatActivity {
         receivedMessages = new ArrayList<>();
         sentMessages = new ArrayList<>();
 
+
+
         //Getting intent
         Intent i = getIntent();
 
@@ -113,12 +115,7 @@ public class ChatActivity extends AppCompatActivity {
             if (!receiverMobNumber.matches(getString(R.string.phoneRegularExp))) {
                 sendLinearLayout.setVisibility(View.GONE);
                 Snackbar snackbar = Snackbar.make(sendLinearLayout, "The sender does not support replies!", Snackbar.LENGTH_INDEFINITE);
-                snackbar.setAction("OK", new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        snackbar.dismiss();
-                    }
-                }).show();
+                snackbar.setAction("OK", v -> snackbar.dismiss()).show();
             }
         }
 
@@ -148,8 +145,8 @@ public class ChatActivity extends AppCompatActivity {
         chatRecyclerView.setLayoutManager(linearLayoutManager);
         chatAdapter = new ChatRecyclerViewAdapter(this, allMessages);
         chatRecyclerView.setAdapter(chatAdapter);
-
         chatAdapter.notifyDataSetChanged();
+        chatRecyclerView.scrollToPosition(chatAdapter.getItemCount()-1);
 
 
         sendButton.setOnClickListener(new View.OnClickListener() {
@@ -189,7 +186,7 @@ public class ChatActivity extends AppCompatActivity {
             RecyclerModalClass incomingMessage = (RecyclerModalClass) args.getSerializable("object");
             assert incomingMessage != null;
             if(incomingMessage.getMobNumber().equals(receiverMobNumber)) {
-                allMessages.add(new ChatMessagePOJO(false, incomingMessage.getMessage(), incomingMessage.getTimeStamp()));
+                allMessages.add(new ChatMessagePOJO(false, incomingMessage.getMessage(), TimeStampUtil.getTheTimeStamp()));
                 chatRecyclerView.post(() -> chatRecyclerView.smoothScrollToPosition(chatAdapter.getItemCount() - 1));
                 chatAdapter.notifyDataSetChanged();
             }
@@ -198,6 +195,7 @@ public class ChatActivity extends AppCompatActivity {
 
     // This Broadcast Receiver tells about the status of the message sent
     private BroadcastReceiver sentReceiver = new BroadcastReceiver() {
+        @SuppressLint("NotifyDataSetChanged")
         @Override
         public void onReceive(Context context, Intent intent) {
 
@@ -235,11 +233,12 @@ public class ChatActivity extends AppCompatActivity {
         }
     };
 
+    @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
     @SuppressLint("UnspecifiedRegisterReceiverFlag")
     @Override
     protected void onResume() {
-        registerReceiver(intentReceiver, intentFilter);
-        registerReceiver(sentReceiver, new IntentFilter("SMS_SENT"));
+        registerReceiver(intentReceiver, intentFilter,RECEIVER_EXPORTED);
+        registerReceiver(sentReceiver, new IntentFilter("SMS_SENT"),RECEIVER_EXPORTED);
         super.onResume();
     }
 

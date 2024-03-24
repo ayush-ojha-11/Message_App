@@ -7,6 +7,7 @@
     android:layout_height="match_parent"
     android:id="@+id/parent_layout"
     android:clickable="false"
+    android:background="@color/backgroundColor"
     tools:context=".activities.MainActivity">
 
     <androidx.appcompat.widget.Toolbar
@@ -27,52 +28,50 @@
 
     </androidx.appcompat.widget.Toolbar>
 
-
     <LinearLayout
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:visibility="gone"
-    android:layout_centerInParent="true"
-    android:id="@+id/linearLayout">
-
-    <com.airbnb.lottie.LottieAnimationView
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:lottie_autoPlay="true"
-        android:layout_gravity="center_horizontal"
-        app:lottie_rawRes="@raw/messageanim"/>
+        android:orientation="vertical"
+        android:visibility="gone"
+        android:layout_centerInParent="true"
+        android:id="@+id/linearLayout">
 
-    <TextView
-        android:id="@+id/textDesc"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:textSize="16sp"
-        android:text="To use this app, make it your default SMS app"
-        tools:ignore="HardcodedText" />
+        <com.airbnb.lottie.LottieAnimationView
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            app:lottie_autoPlay="true"
+            android:layout_gravity="center_horizontal"
+            app:lottie_rawRes="@raw/messageanim"/>
 
-     <Button
-         android:id="@+id/setDefaultBtn"
-         android:layout_width="wrap_content"
-         android:layout_height="wrap_content"
-         android:text="Set default SMS app"
-         android:textColor="@color/white"
-         android:layout_margin="15dp"
-         android:layout_gravity="center"
-         tools:ignore="HardcodedText" />
-</LinearLayout>
+        <TextView
+            android:id="@+id/textDesc"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:textAlignment="center"
+            android:textSize="16sp"
+            android:text="To use this app, make it your default SMS app"
+            tools:ignore="HardcodedText" />
 
+        <Button
+            android:id="@+id/setDefaultBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Set default SMS app"
+            android:textColor="@color/white"
+            android:layout_marginTop="15dp"
+            android:layout_gravity="center"
+            tools:ignore="HardcodedText" />
+    </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="5dp"
         android:visibility="gone"
         android:layout_below="@id/main_layout_toolbar"
-        android:id="@+id/recyclerView"/>
-    
-    
+        android:id="@+id/recyclerView"
+        android:layout_marginTop="8dp"/> <!-- Added margin top for better separation -->
+
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -80,8 +79,8 @@
         android:visibility="gone"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
-        android:layout_margin="35dp"
-        android:src="@drawable/baseline_message_24"
+        android:layout_margin="16dp"
+        android:src="@drawable/baseline_message_white"
         android:contentDescription="GoToComposeActivity"
         tools:ignore="HardcodedText" />
 

@@ -12,11 +12,11 @@ import com.as.mymessage.R;
 
 public class ReceiveViewHolder extends RecyclerView.ViewHolder{
 
-    TextView receivedMessageTextView;
+    TextView receivedMessageTextView, receivedTimeView;
 
     public ReceiveViewHolder(@NonNull View itemView) {
         super(itemView);
         receivedMessageTextView = itemView.findViewById(R.id.received_text_view);
-        //receivedMessageTextView.setMovementMethod(LinkMovementMethod.getInstance());
+        receivedTimeView = itemView.findViewById(R.id.received_time_text_view);
     }
 }

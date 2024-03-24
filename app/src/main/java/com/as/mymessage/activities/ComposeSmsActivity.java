@@ -1,5 +1,6 @@
 package com.as.mymessage.activities;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -12,6 +13,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.telephony.SmsManager;
@@ -55,8 +57,6 @@ public class ComposeSmsActivity extends AppCompatActivity implements RecyclerCli
 
     DatabaseHelper databaseHelper;
 
-    private ImageView backButton;
-
 
     @SuppressLint("SetTextI18n")
     @Override
@@ -68,7 +68,7 @@ public class ComposeSmsActivity extends AppCompatActivity implements RecyclerCli
         messageEditText = findViewById(R.id.message_edit_text);
         toolbarTextView = findViewById(R.id.toolbar_textView);
         checkButton = findViewById(R.id.check_button);
-        backButton = findViewById(R.id.back_button_imageView);
+        ImageView backButton = findViewById(R.id.back_button_imageView);
         ImageView sendButton = findViewById(R.id.send_button);
         contactRecyclerView = findViewById(R.id.contact_recycler_view);
         contactRecyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -271,10 +271,11 @@ public class ComposeSmsActivity extends AppCompatActivity implements RecyclerCli
         }
     };
 
+    @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
     @SuppressLint("UnspecifiedRegisterReceiverFlag")
     @Override
     protected void onResume() {
-        registerReceiver(smsStatusReceiver,new IntentFilter("SMS_SENT"));
+        registerReceiver(smsStatusReceiver,new IntentFilter("SMS_SENT"),RECEIVER_EXPORTED);
         super.onResume();
     }
 

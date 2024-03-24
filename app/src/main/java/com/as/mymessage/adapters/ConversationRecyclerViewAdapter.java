@@ -48,23 +48,23 @@ public class ConversationRecyclerViewAdapter extends RecyclerView.Adapter<Conver
             if (contactPhoto != null)
                 holder.imageView.setImageBitmap(contactPhoto);
             else {
-
                 // Generate color
-
-
                 text = recyclerList.get(position).getContactName();
-                holder.imageView.setImageBitmap(UtilityFunctions.generateCircleBitmap(text.charAt(0), Color.BLUE));
+                holder.imageView.setImageBitmap(UtilityFunctions.generateCircleBitmap(text.charAt(0),Color.rgb(80,200,120)));
             }
         }
         else{
             text = recyclerList.get(position).getMobNumber();
-            holder.imageView.setImageBitmap(UtilityFunctions.generateCircleBitmap(text.charAt(0), Color.RED));
+            holder.imageView.setImageBitmap(UtilityFunctions.generateCircleBitmap(text.charAt(0), Color.rgb(253,70,89)));
+
         }
 
 
         String sender;
         sender = recyclerList.get(position).getContactName() != null ? recyclerList.get(position).getContactName() : recyclerList.get(position).getMobNumber();
         holder.nameView.setText(sender);
+
+
         holder.bodyView.setText(recyclerList.get(position).getMessage());
         holder.timeView.setText(" "+recyclerList.get(position).getDate()+"\n"+recyclerList.get(position).getTime());
 

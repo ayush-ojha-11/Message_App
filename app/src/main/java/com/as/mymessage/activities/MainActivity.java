@@ -97,13 +97,6 @@ public class MainActivity extends AppCompatActivity implements RecyclerClickInte
                 }
             }
 
-            // This logic seems to be deprecated, soon to be removed
-//            if (!allMessagesMap.containsKey(incomingMessage.getMobNumber())) {
-//                // Add the sender and a corresponding list, if it is not already in the hashmap
-//                allMessagesMap.put(incomingMessage.getMobNumber(), new ArrayList<>());
-//            }
-//            // Add the message and details(messageTableModalClass) in the hashmap to the corresponding key values
-//            Objects.requireNonNull(allMessagesMap.get(incomingMessage.getMobNumber())).add(new MessageTableModalClass(incomingMessage.getMobNumber(), incomingMessage.getContactName(), incomingMessage.getMessage(), incomingMessage.getDate(), incomingMessage.getTime(), incomingMessage.getTimeStamp()));
 
             if (found) {
                 //move item from existing position to last index
@@ -122,6 +115,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerClickInte
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+       // applyDefaultNightMode();
 
         // This linear layout holds the animation and set Default SMS app button and is displayed only
         // when the app is not made as default SMS app
@@ -193,7 +187,6 @@ public class MainActivity extends AppCompatActivity implements RecyclerClickInte
         //Listener of Floating Action Button
 
         floatingActionButton.setOnClickListener(v -> startActivityForResult(new Intent(MainActivity.this, ComposeSmsActivity.class), RequestCodeForNewSMS));
-
     }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -282,11 +275,11 @@ public class MainActivity extends AppCompatActivity implements RecyclerClickInte
         }
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
     @SuppressLint("UnspecifiedRegisterReceiverFlag")
     @Override
     protected void onResume() {
-        registerReceiver(intentReceiver, intentFilter);
-//        mainAppFunctioning();
+        registerReceiver(intentReceiver, intentFilter,RECEIVER_EXPORTED);
         super.onResume();
     }
 
@@ -436,5 +429,4 @@ public class MainActivity extends AppCompatActivity implements RecyclerClickInte
         optionsMenu = menu;
         return super.onCreateOptionsMenu(menu);
     }
-
 }

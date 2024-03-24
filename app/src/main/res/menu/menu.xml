@@ -11,6 +11,7 @@
         app:showAsAction="never"
         tools:ignore="HardcodedText" />
 
+
     <item
         android:id="@+id/menu_rate"
         android:title="Rate us"

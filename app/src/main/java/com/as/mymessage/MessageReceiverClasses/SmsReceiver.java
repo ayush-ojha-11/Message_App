@@ -50,7 +50,7 @@ public class SmsReceiver extends BroadcastReceiver {
             mChannel = new NotificationChannel("01", "SMS Notifications", NotificationManager.IMPORTANCE_HIGH);
             NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context, "01");
             //icon
-            mBuilder.setSmallIcon(R.drawable.ic_stat_name);
+            mBuilder.setSmallIcon(R.drawable.baseline_message_24);
             mBuilder.setAutoCancel(true);
             //title
             if (contactName != null)

@@ -115,7 +115,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerClickInte
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-       // applyDefaultNightMode();
+
 
         // This linear layout holds the animation and set Default SMS app button and is displayed only
         // when the app is not made as default SMS app

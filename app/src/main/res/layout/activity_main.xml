@@ -80,7 +80,7 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
         android:layout_margin="16dp"
-        android:src="@drawable/baseline_message_white"
+        android:src="@drawable/baseline_message_24"
         android:contentDescription="GoToComposeActivity"
         tools:ignore="HardcodedText" />
 

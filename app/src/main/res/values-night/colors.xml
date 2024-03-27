@@ -2,8 +2,8 @@
 <resources>
     <color name="backgroundColor">#222232</color>
     <color name="textColor">#FFFFFF</color>
-    <color name="sentMsgBkgColor">#157581</color>
     <color name="white">#FFFFFF</color>
-    <color name="receivedMsgBkgColor">#756C6C</color>
-    <color name="textLinkColor">#4CD964</color>
+    <color name="sentMsgBkgColor">#FF3B3C57</color>
+    <color name="receivedMsgBkgColor">#186D6D</color>
+    <color name="textLinkColor">#1DE5FF</color>
 </resources>
